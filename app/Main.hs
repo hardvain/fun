@@ -68,11 +68,14 @@ data Program = Program {
   fragmentShader :: Shader
 }
 
-createShader :: String -> GL.ShaderType -> IO()
-createShader shaderSource shaderType = do
+
+createShader :: String -> GL.ShaderType -> GL.Program -> IO GL.Shader
+createShader shaderSource shaderType glProgram = do
   shaderId <- GL.createShader shaderType
   GL.shaderSourceBS shaderId GL.$= vsSource
   GL.compileShader shaderId
+  GL.attachShader glProgram shaderId
+  return shaderId
 
 
 vsSource :: BS.ByteString
