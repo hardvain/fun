@@ -8,6 +8,7 @@ module Shader (
 import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLFW as GLFW
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as LB
 
 newtype ShaderId = ShaderId GL.GLuint
 
@@ -17,15 +18,16 @@ data Shader =
   | FragmentShader ShaderId
 
 
-addVertexShader :: BS.ByteString -> IO GL.Shader
+addVertexShader :: String -> IO GL.Shader
 addVertexShader vertexSource = addShader vertexSource Vertex
 
-addFragmentShader :: BS.ByteString -> IO GL.Shader
+addFragmentShader :: String -> IO GL.Shader
 addFragmentShader fragmentSource = addShader fragmentSource Fragment
 
-addShader :: BS.ByteString -> ShaderType -> IO GL.Shader
-addShader shaderSource shaderType = do
+addShader :: String -> ShaderType -> IO GL.Shader
+addShader shaderPath shaderType = do
   shader <- GL.createShader (toGLShader shaderType)
+  shaderSource <- loadShader shaderPath
   (GL.shaderSourceBS shader) GL.$= shaderSource
   GL.compileShader shader
   return shader
@@ -33,3 +35,6 @@ addShader shaderSource shaderType = do
 toGLShader :: ShaderType -> GL.ShaderType
 toGLShader Vertex = GL.VertexShader
 toGLShader Fragment = GL.FragmentShader
+
+loadShader :: String -> IO BS.ByteString
+loadShader = BS.readFile

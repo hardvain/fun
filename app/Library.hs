@@ -17,7 +17,7 @@ data Library = Library {
   fragmentShader :: GL.Shader
 }
 
-createLibrary :: BS.ByteString -> BS.ByteString -> IO Library
+createLibrary :: String -> String -> IO Library
 createLibrary vertexSource fragmentSource = do
   glProgram <- GL.createProgram
   vertexShader <- addVertexShader vertexSource  

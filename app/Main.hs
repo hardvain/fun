@@ -43,7 +43,7 @@ main = do
       maybe' mw (GLFW.terminate >> exitFailure) $ \window -> do
           GLFW.makeContextCurrent mw
           GLFW.setKeyCallback window (Just keyCallback)
-          lib <- createLibrary vsSource vsSource
+          lib <- createLibrary "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader"
           mainLoop window
           GLFW.destroyWindow window
           GLFW.terminate
@@ -56,13 +56,3 @@ mainLoop w = unless' (GLFW.windowShouldClose w) $ do
     GLFW.swapBuffers w
     GLFW.pollEvents
     mainLoop w
-
-vsSource :: BS.ByteString
-vsSource = BS.intercalate (BC.pack "\n")
-            [
-            (BC.pack "attribute vec2 coord2d; ")
-            , (BC.pack "")
-            , (BC.pack "void main(void) { ")
-            , (BC.pack " gl_Position = vec4(coord2d, 0.0, 1.0); ")
-            , (BC.pack "}")
-            ]
