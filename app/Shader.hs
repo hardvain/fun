@@ -1,31 +1,19 @@
 module Shader (
-  ShaderType(..),
-  Shader(..),
   addVertexShader,
   addFragmentShader
 ) where
 
 import qualified Graphics.Rendering.OpenGL as GL
-import qualified Graphics.UI.GLFW as GLFW
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as LB
-
-newtype ShaderId = ShaderId GL.GLuint
-
-data ShaderType = Vertex | Fragment deriving Show
-data Shader = 
-  VertexShader ShaderId
-  | FragmentShader ShaderId
-
 
 addVertexShader :: String -> IO (Maybe GL.Shader)
-addVertexShader vertexSource = addShader vertexSource Vertex
+addVertexShader vertexSource = addShader vertexSource GL.VertexShader
 
 addFragmentShader :: String -> IO (Maybe GL.Shader)
-addFragmentShader fragmentSource = addShader fragmentSource Fragment
+addFragmentShader fragmentSource = addShader fragmentSource GL.FragmentShader
 
-createShader :: ShaderType -> IO GL.Shader
-createShader = GL.createShader . toGLShader
+createShader :: GL.ShaderType -> IO GL.Shader
+createShader = GL.createShader
 
 setShaderSource :: GL.Shader -> BS.ByteString -> IO ()
 setShaderSource shader shaderSource = (GL.shaderSourceBS shader) GL.$= shaderSource
@@ -39,8 +27,10 @@ getCompileStatus = GL.compileStatus
 getShaderLog :: GL.Shader -> IO String
 getShaderLog = GL.shaderInfoLog
 
+loadShaderSource :: String -> IO BS.ByteString
+loadShaderSource = BS.readFile
 
-addShader :: String -> ShaderType -> IO (Maybe GL.Shader)
+addShader :: String -> GL.ShaderType -> IO (Maybe GL.Shader)
 addShader shaderPath shaderType = do
   shader <- createShader shaderType
   shaderSource <- loadShaderSource shaderPath
@@ -50,10 +40,3 @@ addShader shaderPath shaderType = do
   log <- getShaderLog shader
   if status then (return $ Just shader) else return Nothing
 
-
-loadShaderSource :: String -> IO BS.ByteString
-loadShaderSource = BS.readFile
-
-toGLShader :: ShaderType -> GL.ShaderType
-toGLShader Vertex = GL.VertexShader
-toGLShader Fragment = GL.FragmentShader
