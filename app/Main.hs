@@ -7,7 +7,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BC
 import System.Exit
 import System.IO
-
+import Library
 -- tiny utility functions, in the same spirit as 'maybe' or 'either'
 -- makes the code a wee bit easier to read
 
@@ -43,6 +43,7 @@ main = do
       maybe' mw (GLFW.terminate >> exitFailure) $ \window -> do
           GLFW.makeContextCurrent mw
           GLFW.setKeyCallback window (Just keyCallback)
+          lib <- createLibrary vsSource vsSource
           mainLoop window
           GLFW.destroyWindow window
           GLFW.terminate
@@ -55,28 +56,6 @@ mainLoop w = unless' (GLFW.windowShouldClose w) $ do
     GLFW.swapBuffers w
     GLFW.pollEvents
     mainLoop w
-
-
-newtype ShaderId = ShaderId Int
-data ShaderType = Vertex | Fragment
-data Shader = 
-  VertexShader ShaderId
-  | FragmentShader ShaderId
-
-data Program = Program {
-  vertexShader :: Shader,
-  fragmentShader :: Shader
-}
-
-
-createShader :: String -> GL.ShaderType -> GL.Program -> IO GL.Shader
-createShader shaderSource shaderType glProgram = do
-  shaderId <- GL.createShader shaderType
-  GL.shaderSourceBS shaderId GL.$= vsSource
-  GL.compileShader shaderId
-  GL.attachShader glProgram shaderId
-  return shaderId
-
 
 vsSource :: BS.ByteString
 vsSource = BS.intercalate (BC.pack "\n")
