@@ -3,6 +3,8 @@ module Main where
 import Control.Monad (unless, when)
 import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLFW as GLFW
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BC
 import System.Exit
 import System.IO
 
@@ -66,3 +68,19 @@ data Program = Program {
   fragmentShader :: Shader
 }
 
+createShader :: String -> GL.ShaderType -> IO()
+createShader shaderSource shaderType = do
+  shaderId <- GL.createShader shaderType
+  GL.shaderSourceBS shaderId GL.$= vsSource
+  GL.compileShader shaderId
+
+
+vsSource :: BS.ByteString
+vsSource = BS.intercalate (BC.pack "\n")
+            [
+            (BC.pack "attribute vec2 coord2d; ")
+            , (BC.pack "")
+            , (BC.pack "void main(void) { ")
+            , (BC.pack " gl_Position = vec4(coord2d, 0.0, 1.0); ")
+            , (BC.pack "}")
+            ]

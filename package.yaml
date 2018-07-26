@@ -24,6 +24,7 @@ dependencies:
 - OpenGL
 - GLUT
 - GLFW-b
+- bytestring
 
 library:
   source-dirs: src
