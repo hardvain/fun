@@ -20,8 +20,8 @@ data Library = Library {
 createLibrary :: String -> String -> IO Library
 createLibrary vertexSource fragmentSource = do
   glProgram <- GL.createProgram
-  vertexShader <- addVertexShader vertexSource  
+  (Just vertexShader) <- addVertexShader vertexSource  
   _ <- GL.attachShader glProgram vertexShader
-  fragmentShader <- addFragmentShader fragmentSource
+  (Just fragmentShader) <- addFragmentShader fragmentSource
   _ <- GL.attachShader glProgram fragmentShader
   return (Library vertexShader fragmentShader)

@@ -11,6 +11,8 @@ import Library
 -- tiny utility functions, in the same spirit as 'maybe' or 'either'
 -- makes the code a wee bit easier to read
 
+vertexShaderPath = "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" 
+fragmentShaderPath = "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader" 
 
 bool :: Bool -> a -> a -> a
 bool b falseRes trueRes = if b then trueRes else falseRes
@@ -39,11 +41,15 @@ main = do
   successfulInit <- GLFW.init
   -- if init failed, we exit the program
   bool successfulInit exitFailure $ do
+      GLFW.windowHint $ GLFW.WindowHint'ContextVersionMajor 4
+      GLFW.windowHint $ GLFW.WindowHint'ContextVersionMinor 1
+      GLFW.windowHint $ GLFW.WindowHint'OpenGLProfile GLFW.OpenGLProfile'Core
+      GLFW.windowHint $ GLFW.WindowHint'OpenGLForwardCompat True
       mw <- GLFW.createWindow 1920 1280 "Simple example, haskell style" Nothing Nothing
       maybe' mw (GLFW.terminate >> exitFailure) $ \window -> do
           GLFW.makeContextCurrent mw
           GLFW.setKeyCallback window (Just keyCallback)
-          lib <- createLibrary "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader"
+          lib <- createLibrary vertexShaderPath fragmentShaderPath
           mainLoop window
           GLFW.destroyWindow window
           GLFW.terminate
