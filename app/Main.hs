@@ -45,7 +45,7 @@ main = do
       GLFW.windowHint $ GLFW.WindowHint'ContextVersionMinor 1
       GLFW.windowHint $ GLFW.WindowHint'OpenGLProfile GLFW.OpenGLProfile'Core
       GLFW.windowHint $ GLFW.WindowHint'OpenGLForwardCompat True
-      mw <- GLFW.createWindow 1920 1280 "Simple example, haskell style" Nothing Nothing
+      mw <- GLFW.createWindow 1920 1280 "Fun" Nothing Nothing
       maybe' mw (GLFW.terminate >> exitFailure) $ \window -> do
           GLFW.makeContextCurrent mw
           GLFW.setKeyCallback window (Just keyCallback)

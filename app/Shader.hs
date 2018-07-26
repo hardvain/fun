@@ -24,20 +24,36 @@ addVertexShader vertexSource = addShader vertexSource Vertex
 addFragmentShader :: String -> IO (Maybe GL.Shader)
 addFragmentShader fragmentSource = addShader fragmentSource Fragment
 
+createShader :: ShaderType -> IO GL.Shader
+createShader = GL.createShader . toGLShader
+
+setShaderSource :: GL.Shader -> BS.ByteString -> IO ()
+setShaderSource shader shaderSource = (GL.shaderSourceBS shader) GL.$= shaderSource
+
+compileShader :: GL.Shader -> IO()
+compileShader = GL.compileShader
+
+getCompileStatus :: GL.Shader -> IO Bool
+getCompileStatus = GL.compileStatus
+
+getShaderLog :: GL.Shader -> IO String
+getShaderLog = GL.shaderInfoLog
+
+
 addShader :: String -> ShaderType -> IO (Maybe GL.Shader)
 addShader shaderPath shaderType = do
-  shader <- GL.createShader (toGLShader shaderType)
-  shaderSource <- loadShader shaderPath
-  (GL.shaderSourceBS shader) GL.$= shaderSource
-  GL.compileShader shader
-  status <- GL.compileStatus shader
-  log <- GL.shaderInfoLog shader
-  _ <- putStrLn ((show shaderType) ++ "\n" ++ log)
+  shader <- createShader shaderType
+  shaderSource <- loadShaderSource shaderPath
+  setShaderSource shader shaderSource
+  compileShader shader
+  status <- getCompileStatus shader
+  log <- getShaderLog shader
   if status then (return $ Just shader) else return Nothing
-  
+
+
+loadShaderSource :: String -> IO BS.ByteString
+loadShaderSource = BS.readFile
+
 toGLShader :: ShaderType -> GL.ShaderType
 toGLShader Vertex = GL.VertexShader
 toGLShader Fragment = GL.FragmentShader
-
-loadShader :: String -> IO BS.ByteString
-loadShader = BS.readFile
