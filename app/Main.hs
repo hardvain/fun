@@ -35,12 +35,12 @@ initResources = do
     createBuffer vertices ArrayBuffer
 
   program >>= useProgram
-
   let firstIndex = 0
-      vPosition = AttribLocation 0
-  vertexAttribPointer vPosition $=
-    (ToFloat, VertexArrayDescriptor 2 Float 0 (bufferOffset firstIndex))
-  vertexAttribArray vPosition $= Enabled
+  let vPosition = AttribLocation 0
+  withVertexObject triangles $ do
+    vertexAttribPointer vPosition $=
+      (ToFloat, VertexArrayDescriptor 2 Float 0 (bufferOffset firstIndex))
+    vertexAttribArray vPosition $= Enabled
 
   return $ Descriptor triangles firstIndex (fromIntegral numVertices)
 

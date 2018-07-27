@@ -24,6 +24,6 @@ createVertexArrayObject = genObjectName
 withVertexObject :: VertexArrayObject -> IO () -> IO()
 withVertexObject vertexObject action = do
   bindVertexArrayObject $= Just vertexObject
-  _ <- action
+  action
   bindVertexArrayObject $= Nothing
 
