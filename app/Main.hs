@@ -8,7 +8,7 @@ import Foreign.Marshal.Array
 import Foreign.Ptr
 import Foreign.Storable
 import Window
-
+import Buffer 
 data Descriptor = Descriptor VertexArrayObject ArrayIndex NumArrayIndices
 
 bufferOffset :: Integral a => a -> Ptr b
@@ -29,11 +29,7 @@ initResources = do
         Vertex2 (-0.85)   0.90 ] :: [Vertex2 GLfloat]
       numVertices = length vertices
 
-  arrayBuffer <- genObjectName
-  bindBuffer ArrayBuffer $= Just arrayBuffer
-  withArray vertices $ \ptr -> do
-    let size = fromIntegral (numVertices * sizeOf (head vertices))
-    bufferData ArrayBuffer $= (size, ptr, StaticDraw)
+  _ <- createBuffer vertices ArrayBuffer
 
   program <- loadShaders [
      ShaderInfo VertexShader (FileSource "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader"),
@@ -59,7 +55,14 @@ main = do
 
 onDisplay :: Window -> Descriptor -> IO ()
 onDisplay win descriptor@(Descriptor triangles firstIndex numVertices) = do
+  GL.clearColor $= Color4 1 0 0 1
+  GL.clear [ColorBuffer]
   bindVertexArrayObject $= Just triangles
   drawArrays Triangles firstIndex numVertices
+  GLFW.swapBuffers win
+  
+  forever $ do
+     GLFW.pollEvents
+     onDisplay win descriptor
   
   
