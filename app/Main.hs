@@ -15,26 +15,26 @@ import Renderer
 bufferOffset :: Integral a => a -> Ptr b
 bufferOffset = plusPtr nullPtr . fromIntegral
 
+vertices :: [Vertex2 GLfloat]
+vertices = [
+  Vertex2 (-0.90) (-0.90),  -- Triangle 1
+  Vertex2   0.85  (-0.90),
+  Vertex2 (-0.90)   0.85 ,
+  Vertex2   0.90  (-0.85),  -- Triangle 2
+  Vertex2   0.90    0.90 ,
+  Vertex2 (-0.85)   0.90 ]
+
+numVertices = length vertices
+
+program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader"
 
 initResources :: IO Descriptor
 initResources = do
-  triangles <- genObjectName
-  bindVertexArrayObject $= Just triangles
+  triangles <- createVertexArrayObject
+  withVertexObject triangles $ do
+    createBuffer vertices ArrayBuffer
 
-  let vertices = [
-        Vertex2 (-0.90) (-0.90),  -- Triangle 1
-        Vertex2   0.85  (-0.90),
-        Vertex2 (-0.90)   0.85 ,
-        Vertex2   0.90  (-0.85),  -- Triangle 2
-        Vertex2   0.90    0.90 ,
-        Vertex2 (-0.85)   0.90 ] :: [Vertex2 GLfloat]
-      numVertices = length vertices
-
-  _ <- createBuffer vertices ArrayBuffer
-
-  program <- Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader"
-  
-  useProgram program
+  program >>= useProgram
 
   let firstIndex = 0
       vPosition = AttribLocation 0

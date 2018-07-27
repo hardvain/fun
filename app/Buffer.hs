@@ -17,3 +17,13 @@ createBuffer datum bufferTarget = do
   withArray datum $ \ptr -> do
     let size = fromIntegral ((length datum) * sizeOf (head datum))
     bufferData bufferTarget $= (size, ptr, StaticDraw)
+
+createVertexArrayObject :: IO VertexArrayObject
+createVertexArrayObject = genObjectName
+
+withVertexObject :: VertexArrayObject -> IO () -> IO()
+withVertexObject vertexObject action = do
+  bindVertexArrayObject $= Just vertexObject
+  _ <- action
+  bindVertexArrayObject $= Nothing
+

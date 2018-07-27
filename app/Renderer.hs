@@ -11,7 +11,7 @@ data Descriptor = Descriptor VertexArrayObject ArrayIndex NumArrayIndices
 
 render :: Window -> Descriptor -> IO ()
 render window descriptor@(Descriptor vertexObject firstIndex numVertices) = do
-  GL.clearColor $= Color4 1 0 0 1
+  GL.clearColor $= Color4 0 0.5 0.5 1
   GL.clear [ColorBuffer]
   bindVertexArrayObject $= Just vertexObject
   drawArrays Triangles firstIndex numVertices
