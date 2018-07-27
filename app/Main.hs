@@ -3,11 +3,12 @@ import Graphics.Rendering.OpenGL as GL
 import Graphics.UI.GLFW as GLFW
 import Control.Monad
 import System.Exit ( exitWith, ExitCode(..) )
-import LoadShaders
+import Shader
 import Foreign.Marshal.Array
 import Foreign.Ptr
 import Foreign.Storable
 import Window
+
 data Descriptor = Descriptor VertexArrayObject ArrayIndex NumArrayIndices
 
 bufferOffset :: Integral a => a -> Ptr b
@@ -47,12 +48,8 @@ initResources = do
 
   return $ Descriptor triangles firstIndex (fromIntegral numVertices)
 
-
-
-
 main :: IO ()
 main = do
-  _ <- initWindow
   win <- Window.createWindow 1920 1280 "Fun"
   descriptor <- initResources
   onDisplay win descriptor
@@ -62,12 +59,7 @@ main = do
 
 onDisplay :: Window -> Descriptor -> IO ()
 onDisplay win descriptor@(Descriptor triangles firstIndex numVertices) = do
-  GL.clearColor $= Color4 1 0 0 1
-  GL.clear [ColorBuffer]
   bindVertexArrayObject $= Just triangles
   drawArrays Triangles firstIndex numVertices
-  GLFW.swapBuffers win
   
-  forever $ do
-     GLFW.pollEvents
-     onDisplay win descriptor
+  

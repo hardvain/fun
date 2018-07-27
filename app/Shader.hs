@@ -1,47 +1,74 @@
 module Shader (
-  addVertexShader,
-  addFragmentShader
+   ShaderSource(..), ShaderInfo(..), loadShaders
 ) where
 
-import qualified Graphics.Rendering.OpenGL as GL
-import qualified Data.ByteString as BS
+import Control.Exception
+import Control.Monad
+import qualified Data.ByteString as B
+import Graphics.Rendering.OpenGL
 
-addVertexShader :: String -> IO (Maybe GL.Shader)
-addVertexShader vertexSource = addShader vertexSource GL.VertexShader
+--------------------------------------------------------------------------------
 
-addFragmentShader :: String -> IO (Maybe GL.Shader)
-addFragmentShader fragmentSource = addShader fragmentSource GL.FragmentShader
+-- | The source of the shader source code.
 
-createShader :: GL.ShaderType -> IO GL.Shader
-createShader = GL.createShader
+data ShaderSource =
+     ByteStringSource B.ByteString
+     -- ^ The shader source code is directly given as a 'B.ByteString'.
+   | StringSource String
+     -- ^ The shader source code is directly given as a 'String'.
+   | FileSource FilePath
+     -- ^ The shader source code is located in the file at the given 'FilePath'.
+   deriving ( Eq, Ord, Show )
 
-setShaderSource :: GL.Shader -> BS.ByteString -> IO ()
-setShaderSource shader shaderSource = (GL.shaderSourceBS shader) GL.$= shaderSource
+getSource :: ShaderSource -> IO B.ByteString
+getSource (ByteStringSource bs) = return bs
+getSource (StringSource str) = return $ packUtf8 str
+getSource (FileSource path) = B.readFile path
 
-compileShader :: GL.Shader -> IO()
-compileShader = GL.compileShader
+--------------------------------------------------------------------------------
 
-getCompileStatus :: GL.Shader -> IO Bool
-getCompileStatus = GL.compileStatus
+-- | A description of a shader: The type of the shader plus its source code.
 
-getShaderLog :: GL.Shader -> IO String
-getShaderLog = GL.shaderInfoLog
+data ShaderInfo = ShaderInfo ShaderType ShaderSource
+   deriving ( Eq, Ord, Show )
 
-loadShaderSource :: String -> IO BS.ByteString
-loadShaderSource = BS.readFile
+--------------------------------------------------------------------------------
 
-addShader :: String -> GL.ShaderType -> IO (Maybe GL.Shader)
-addShader shaderPath shaderType = do
-  shader <- createShader shaderType
-  shaderSource <- loadShaderSource shaderPath
-  setShaderSource shader shaderSource
-  compileShader shader
-  status <- getCompileStatus shader
-  log <- getShaderLog shader
-  if status 
-    then 
-      (return $ Just shader) 
-    else do
-      _ <- putStrLn log
-      return Nothing
+-- | Create a new program object from the given shaders, throwing an
+-- 'IOException' if something goes wrong.
 
+loadShaders :: [ShaderInfo] -> IO Program
+loadShaders infos =
+   createProgram `bracketOnError` deleteObjectName $ \program -> do
+      loadCompileAttach program infos
+      linkAndCheck program
+      return program
+
+linkAndCheck :: Program -> IO ()
+linkAndCheck = checked linkProgram linkStatus programInfoLog "link"
+
+loadCompileAttach :: Program -> [ShaderInfo] -> IO ()
+loadCompileAttach _ [] = return ()
+loadCompileAttach program (ShaderInfo shType source : infos) =
+   createShader shType `bracketOnError` deleteObjectName $ \shader -> do
+      src <- getSource source
+      shaderSourceBS shader $= src
+      compileAndCheck shader
+      attachShader program shader
+      loadCompileAttach program infos
+
+compileAndCheck :: Shader -> IO ()
+compileAndCheck = checked compileShader compileStatus shaderInfoLog "compile"
+
+checked :: (t -> IO ())
+        -> (t -> GettableStateVar Bool)
+        -> (t -> GettableStateVar String)
+        -> String
+        -> t
+        -> IO ()
+checked action getStatus getInfoLog message object = do
+   action object
+   ok <- get (getStatus object)
+   unless ok $ do
+      infoLog <- get (getInfoLog object)
+      fail (message ++ " log: " ++ infoLog)

@@ -1,17 +1,14 @@
-module Window where
+module Window (
+  createWindow, 
+  closeWindow
+) where
 
-import Graphics.Rendering.OpenGL as GL
-import Graphics.UI.GLFW as GLFW
-import Control.Monad
+import qualified Graphics.UI.GLFW as GLFW
 import System.Exit ( exitWith, ExitCode(..) )
-import LoadShaders
-import Foreign.Marshal.Array
-import Foreign.Ptr
-import Foreign.Storable
 
 initWindow :: IO ()
 initWindow = do
-  GLFW.init
+  _ <- GLFW.init
   GLFW.defaultWindowHints
   GLFW.windowHint $ GLFW.WindowHint'ContextVersionMajor 4
   GLFW.windowHint $ GLFW.WindowHint'ContextVersionMinor 1
@@ -20,6 +17,7 @@ initWindow = do
 
 createWindow :: Int -> Int -> String -> IO (GLFW.Window)
 createWindow width height title = do
+  initWindow
   Just win <- GLFW.createWindow width height title Nothing Nothing
   GLFW.makeContextCurrent (Just win)
   initCallbacks win
@@ -52,3 +50,9 @@ shutdown win = do
   GLFW.terminate
   _ <- exitWith ExitSuccess
   return ()
+
+closeWindow :: GLFW.Window -> IO ()
+closeWindow win = do
+    GLFW.destroyWindow win
+    GLFW.terminate
+  
