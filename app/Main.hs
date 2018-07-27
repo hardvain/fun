@@ -1,3 +1,4 @@
+module Main where
 import Graphics.Rendering.OpenGL as GL
 import Graphics.UI.GLFW as GLFW
 import Control.Monad
@@ -6,7 +7,7 @@ import LoadShaders
 import Foreign.Marshal.Array
 import Foreign.Ptr
 import Foreign.Storable
-
+import Window
 data Descriptor = Descriptor VertexArrayObject ArrayIndex NumArrayIndices
 
 bufferOffset :: Integral a => a -> Ptr b
@@ -47,41 +48,12 @@ initResources = do
   return $ Descriptor triangles firstIndex (fromIntegral numVertices)
 
 
-resizeWindow :: GLFW.WindowSizeCallback
-resizeWindow win w h =
-    do
-      GL.viewport   $= (GL.Position 0 0, GL.Size (fromIntegral w) (fromIntegral h))
-      GL.matrixMode $= GL.Projection
-      GL.loadIdentity
-      GL.ortho2D 0 (realToFrac w) (realToFrac h) 0
-
-
-keyPressed :: GLFW.KeyCallback 
-keyPressed win GLFW.Key'Escape _ GLFW.KeyState'Pressed _ = shutdown win
-keyPressed _   _               _ _                     _ = return ()
-
-
-shutdown :: GLFW.WindowCloseCallback
-shutdown win = do
-  GLFW.destroyWindow win
-  GLFW.terminate
-  _ <- exitWith ExitSuccess
-  return ()
 
 
 main :: IO ()
 main = do
-  GLFW.init
-  GLFW.defaultWindowHints
-  GLFW.windowHint $ GLFW.WindowHint'ContextVersionMajor 4
-  GLFW.windowHint $ GLFW.WindowHint'ContextVersionMinor 1
-  GLFW.windowHint $ GLFW.WindowHint'OpenGLProfile GLFW.OpenGLProfile'Core
-  GLFW.windowHint $ GLFW.WindowHint'OpenGLForwardCompat True
-  Just win <- GLFW.createWindow 640 480 "Haskel OpenGL Tutorial 02" Nothing Nothing
-  GLFW.makeContextCurrent (Just win)
-  GLFW.setWindowSizeCallback win (Just resizeWindow)
-  GLFW.setKeyCallback win (Just keyPressed)
-  GLFW.setWindowCloseCallback win (Just shutdown)
+  _ <- initWindow
+  win <- Window.createWindow 1920 1280 "Fun"
   descriptor <- initResources
   onDisplay win descriptor
   GLFW.destroyWindow win
