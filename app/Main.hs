@@ -9,6 +9,7 @@ import Foreign.Ptr
 import Foreign.Storable
 import Window
 import Buffer 
+import Program
 data Descriptor = Descriptor VertexArrayObject ArrayIndex NumArrayIndices
 
 bufferOffset :: Integral a => a -> Ptr b
@@ -31,10 +32,9 @@ initResources = do
 
   _ <- createBuffer vertices ArrayBuffer
 
-  program <- loadShaders [
-     ShaderInfo VertexShader (FileSource "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader"),
-     ShaderInfo FragmentShader (FileSource "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader")]
-  currentProgram $= Just program
+  program <- Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader"
+  
+  useProgram program
 
   let firstIndex = 0
       vPosition = AttribLocation 0
