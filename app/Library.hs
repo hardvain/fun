@@ -1,6 +1,6 @@
 module Library (
   createLibrary,
-  Library
+  Library(..)
 ) where
 
 import Control.Monad (unless, when)
@@ -14,14 +14,24 @@ import Shader
 
 data Library = Library {
   vertexShader :: GL.Shader,
-  fragmentShader :: GL.Shader
+  fragmentShader :: GL.Shader,
+  program :: GL.Program
 }
 
-createLibrary :: String -> String -> IO Library
+createLibrary :: String -> String -> IO (Maybe Library)
 createLibrary vertexSource fragmentSource = do
   glProgram <- GL.createProgram
   (Just vertexShader) <- addVertexShader vertexSource  
   _ <- GL.attachShader glProgram vertexShader
   (Just fragmentShader) <- addFragmentShader fragmentSource
   _ <- GL.attachShader glProgram fragmentShader
-  return (Library vertexShader fragmentShader)
+  GL.linkProgram glProgram
+  linkStatus <- GL.linkStatus glProgram
+  GL.validateProgram glProgram
+  putStrLn (show linkStatus)
+  if (linkStatus )
+    then 
+      (return $ Just $ Library vertexShader fragmentShader glProgram) 
+    else
+      return Nothing
+  

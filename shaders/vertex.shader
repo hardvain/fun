@@ -1,6 +1,9 @@
 #version 410 core
-in vec3 position;
-void main()
+
+layout(location = 0) in vec4 vPosition;
+
+void
+main()
 {
-    gl_Position = vec4(position, 1.0);
+   gl_Position = vPosition;
 }

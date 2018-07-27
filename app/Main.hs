@@ -1,64 +1,101 @@
-module Main where
+import Graphics.Rendering.OpenGL as GL
+import Graphics.UI.GLFW as GLFW
+import Control.Monad
+import System.Exit ( exitWith, ExitCode(..) )
+import LoadShaders
+import Foreign.Marshal.Array
+import Foreign.Ptr
+import Foreign.Storable
 
-import Control.Monad (unless, when)
-import qualified Graphics.Rendering.OpenGL as GL
-import qualified Graphics.UI.GLFW as GLFW
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BC
-import System.Exit
-import System.IO
-import Library
--- tiny utility functions, in the same spirit as 'maybe' or 'either'
--- makes the code a wee bit easier to read
+data Descriptor = Descriptor VertexArrayObject ArrayIndex NumArrayIndices
 
-vertexShaderPath = "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" 
-fragmentShaderPath = "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader" 
+bufferOffset :: Integral a => a -> Ptr b
+bufferOffset = plusPtr nullPtr . fromIntegral
 
-bool :: Bool -> a -> a -> a
-bool b falseRes trueRes = if b then trueRes else falseRes
 
-unless' :: Monad m => m Bool -> m () -> m ()
-unless' action falseAction = do
-    b <- action
-    unless b falseAction
+initResources :: IO Descriptor
+initResources = do
+  triangles <- genObjectName
+  bindVertexArrayObject $= Just triangles
 
-maybe' :: Maybe a -> b -> (a -> b) -> b
-maybe' m nothingRes f = case m of
-    Nothing -> nothingRes
-    Just x  -> f x
-    
--- type ErrorCallback = Error -> String -> IO ()
-errorCallback :: GLFW.ErrorCallback
-errorCallback err description = hPutStrLn stderr description
+  let vertices = [
+        Vertex2 (-0.90) (-0.90),  -- Triangle 1
+        Vertex2   0.85  (-0.90),
+        Vertex2 (-0.90)   0.85 ,
+        Vertex2   0.90  (-0.85),  -- Triangle 2
+        Vertex2   0.90    0.90 ,
+        Vertex2 (-0.85)   0.90 ] :: [Vertex2 GLfloat]
+      numVertices = length vertices
 
-keyCallback :: GLFW.KeyCallback
-keyCallback window key scancode action mods = when (key == GLFW.Key'Escape && action == GLFW.KeyState'Pressed) $
-  GLFW.setWindowShouldClose window True
+  arrayBuffer <- genObjectName
+  bindBuffer ArrayBuffer $= Just arrayBuffer
+  withArray vertices $ \ptr -> do
+    let size = fromIntegral (numVertices * sizeOf (head vertices))
+    bufferData ArrayBuffer $= (size, ptr, StaticDraw)
+
+  program <- loadShaders [
+     ShaderInfo VertexShader (FileSource "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader"),
+     ShaderInfo FragmentShader (FileSource "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader")]
+  currentProgram $= Just program
+
+  let firstIndex = 0
+      vPosition = AttribLocation 0
+  vertexAttribPointer vPosition $=
+    (ToFloat, VertexArrayDescriptor 2 Float 0 (bufferOffset firstIndex))
+  vertexAttribArray vPosition $= Enabled
+
+  return $ Descriptor triangles firstIndex (fromIntegral numVertices)
+
+
+resizeWindow :: GLFW.WindowSizeCallback
+resizeWindow win w h =
+    do
+      GL.viewport   $= (GL.Position 0 0, GL.Size (fromIntegral w) (fromIntegral h))
+      GL.matrixMode $= GL.Projection
+      GL.loadIdentity
+      GL.ortho2D 0 (realToFrac w) (realToFrac h) 0
+
+
+keyPressed :: GLFW.KeyCallback 
+keyPressed win GLFW.Key'Escape _ GLFW.KeyState'Pressed _ = shutdown win
+keyPressed _   _               _ _                     _ = return ()
+
+
+shutdown :: GLFW.WindowCloseCallback
+shutdown win = do
+  GLFW.destroyWindow win
+  GLFW.terminate
+  _ <- exitWith ExitSuccess
+  return ()
+
 
 main :: IO ()
 main = do
-  GLFW.setErrorCallback (Just errorCallback)
-  successfulInit <- GLFW.init
-  -- if init failed, we exit the program
-  bool successfulInit exitFailure $ do
-      GLFW.windowHint $ GLFW.WindowHint'ContextVersionMajor 4
-      GLFW.windowHint $ GLFW.WindowHint'ContextVersionMinor 1
-      GLFW.windowHint $ GLFW.WindowHint'OpenGLProfile GLFW.OpenGLProfile'Core
-      GLFW.windowHint $ GLFW.WindowHint'OpenGLForwardCompat True
-      mw <- GLFW.createWindow 1920 1280 "Fun" Nothing Nothing
-      maybe' mw (GLFW.terminate >> exitFailure) $ \window -> do
-          GLFW.makeContextCurrent mw
-          GLFW.setKeyCallback window (Just keyCallback)
-          lib <- createLibrary vertexShaderPath fragmentShaderPath
-          mainLoop window
-          GLFW.destroyWindow window
-          GLFW.terminate
-          exitSuccess
-          
-mainLoop :: GLFW.Window -> IO ()
-mainLoop w = unless' (GLFW.windowShouldClose w) $ do
-    GL.clearColor GL.$= GL.Color4 0 0.5 0.5 1
-    GL.clear [GL.ColorBuffer]
-    GLFW.swapBuffers w
-    GLFW.pollEvents
-    mainLoop w
+  GLFW.init
+  GLFW.defaultWindowHints
+  GLFW.windowHint $ GLFW.WindowHint'ContextVersionMajor 4
+  GLFW.windowHint $ GLFW.WindowHint'ContextVersionMinor 1
+  GLFW.windowHint $ GLFW.WindowHint'OpenGLProfile GLFW.OpenGLProfile'Core
+  GLFW.windowHint $ GLFW.WindowHint'OpenGLForwardCompat True
+  Just win <- GLFW.createWindow 640 480 "Haskel OpenGL Tutorial 02" Nothing Nothing
+  GLFW.makeContextCurrent (Just win)
+  GLFW.setWindowSizeCallback win (Just resizeWindow)
+  GLFW.setKeyCallback win (Just keyPressed)
+  GLFW.setWindowCloseCallback win (Just shutdown)
+  descriptor <- initResources
+  onDisplay win descriptor
+  GLFW.destroyWindow win
+  GLFW.terminate
+
+
+onDisplay :: Window -> Descriptor -> IO ()
+onDisplay win descriptor@(Descriptor triangles firstIndex numVertices) = do
+  GL.clearColor $= Color4 1 0 0 1
+  GL.clear [ColorBuffer]
+  bindVertexArrayObject $= Just triangles
+  drawArrays Triangles firstIndex numVertices
+  GLFW.swapBuffers win
+  
+  forever $ do
+     GLFW.pollEvents
+     onDisplay win descriptor

@@ -38,5 +38,10 @@ addShader shaderPath shaderType = do
   compileShader shader
   status <- getCompileStatus shader
   log <- getShaderLog shader
-  if status then (return $ Just shader) else return Nothing
+  if status 
+    then 
+      (return $ Just shader) 
+    else do
+      _ <- putStrLn log
+      return Nothing
 
