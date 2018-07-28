@@ -26,21 +26,23 @@ vertices = [
 
 numVertices = length vertices
 
-program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader"
+descriptor :: VertexDescriptor
+descriptor = [ VertexAttributeDescriptor (AttribLocation 0) Float 2 0 ]
+
+program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader" descriptor
+
 
 initResources :: IO Descriptor
 initResources = do
   triangles <- createVertexArrayObject
-  withVertexObject triangles $ do
-    createBuffer vertices ArrayBuffer
-
-  program >>= useProgram
   let firstIndex = 0
   let vPosition = AttribLocation 0
   withVertexObject triangles $ do
+    createArrayBuffer vertices 
     vertexAttribPointer vPosition $=
       (ToFloat, VertexArrayDescriptor 2 Float 0 (bufferOffset firstIndex))
     vertexAttribArray vPosition $= Enabled
+  program >>= useProgram
 
   return $ Descriptor triangles firstIndex (fromIntegral numVertices)
 
@@ -51,3 +53,4 @@ main = do
   _ <- render win descriptor
   GLFW.destroyWindow win
   GLFW.terminate
+

@@ -5,8 +5,11 @@ import Foreign.Marshal.Array
 import Foreign.Storable
 import Window
 
-createBuffer :: (Storable a) => [a] -> BufferTarget  -> IO()
-createBuffer datum bufferTarget = do
+createArrayBuffer :: (Storable a) => [a] -> IO()
+createArrayBuffer = createBuffer  ArrayBuffer
+
+createBuffer :: (Storable a) => BufferTarget -> [a] -> IO()
+createBuffer bufferTarget datum = do
   buffer <- genObjectName
   bindBuffer bufferTarget $= Just buffer
   withArray datum $ \ptr -> do
