@@ -25,10 +25,7 @@ vertices = [
 
 numVertices = length vertices
 
-descriptor :: VertexDescriptor
-descriptor = [ VertexAttributeDescriptor (AttribLocation 0) Float 2 0 ]
-
-program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader" descriptor
+program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader"
 
 
 initResources :: IO Mesh
