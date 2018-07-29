@@ -20,6 +20,7 @@ data RenderHint = RenderHint {
   numVertices :: Int
 }
 
+
 render :: Window -> Mesh -> RenderHint -> IO ()
 render window mesh hint@(RenderHint mode startIndex numVertices) = do
   GL.clearColor $= Color4 0 0 0 1
