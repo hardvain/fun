@@ -49,20 +49,22 @@ createMesh (colorsData, positions) = do
     vao = vao
   }
 
-draw :: Drawable -> Window -> IO()
-draw drawable window = do
-  let renderHint = RenderHint GL.Triangles 0 3
-  mesh <- createMesh drawable
-  render window mesh renderHint
-
-render :: Window -> Mesh -> RenderHint -> IO ()
-render window mesh hint@(RenderHint mode startIndex numVertices) = do
+draw :: [Drawable] -> Window -> IO()
+draw drawables window = do
   GL.clearColor $= Color4 0 0 0 1
   GL.clear [ColorBuffer]
-  withVertexArrayObject (vao mesh) $ do
-    drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
+  let renderHint = RenderHint GL.Triangles 0 3
+  mapM_ (render window renderHint) drawables
   GLFW.swapBuffers window
   forever $ do
     GLFW.pollEvents
-    render window mesh hint
+    draw drawables window
 
+render :: Window ->  RenderHint -> Drawable -> IO ()
+render window hint drawable  = do
+  mesh <- createMesh drawable
+  renderMesh hint mesh
+
+renderMesh :: RenderHint -> Mesh -> IO ()
+renderMesh hint@(RenderHint mode startIndex numVertices) mesh = withVertexArrayObject (vao mesh) $ do
+  drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
