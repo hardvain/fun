@@ -6,14 +6,13 @@ import System.Exit ( exitWith, ExitCode(..) )
 import Shader
 import Foreign.Marshal.Array
 import Foreign.Ptr
+import Window
 import Foreign.Storable
 import Window
 import Buffer 
 import Program
 import Renderer
 
-bufferOffset :: Integral a => a -> Ptr b
-bufferOffset = plusPtr nullPtr . fromIntegral
 
 vertices :: [Vertex2 GLfloat]
 vertices = [
@@ -37,10 +36,11 @@ initResources = do
   triangles <- createVertexArrayObject
   let firstIndex = 0
   let vPosition = AttribLocation 0
-  withVertexObject triangles $ do
-    createArrayBuffer vertices 
-    vertexAttribPointer vPosition $=
-      (ToFloat, VertexArrayDescriptor 2 Float 0 (bufferOffset firstIndex))
+  vertexAttribPointer vPosition $=
+    (ToFloat, VertexArrayDescriptor 2 Float 0 (bufferOffset firstIndex))
+  withVertexArrayObject triangles $ do
+    createArrayBuffer vertices
+    
     vertexAttribArray vPosition $= Enabled
   program >>= useProgram
 
@@ -54,3 +54,30 @@ main = do
   GLFW.destroyWindow win
   GLFW.terminate
 
+
+data Mesh = Mesh {
+  positionBufferObject :: Maybe GL.BufferObject,
+  positions :: [GL.Vertex3  GL.GLfloat],
+  vao :: Maybe GL.VertexArrayObject
+}
+
+
+createMesh :: Positions -> IO Mesh
+createMesh positions = do
+  vao <- createVertexArrayObject
+  positionBufferObject <- withVertexArrayObject vao $ do
+    positionBufferObject <- createPositionBuffer positions
+    positionAttributeLocation <- describeAttribute 0 3 GL.Float
+    return positionBufferObject
+  return Mesh {
+    positionBufferObject = Just positionBufferObject,
+    positions = positions,
+    vao = Just vao
+  }
+  -- create buffer for position
+  -- create buffer for colors
+  -- create vbo
+  -- bind position buffer
+  -- set vertex attrib pointer for position
+  -- enable the vertex attrib 
+  -- unbind vao
