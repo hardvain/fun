@@ -14,7 +14,7 @@ import Program
 import Renderer
 
 
-vertices :: [Vertex4 GLfloat]
+vertices :: [Vertex4 Float]
 vertices = [
   Vertex4 (-0.90) (-0.90) 0 1.0,
   Vertex4   0.85  (-0.90) 0 1.0,
@@ -23,7 +23,7 @@ vertices = [
   Vertex4   0.90    0.90 0 1.0,
   Vertex4 (-0.85)   0.90 0 1.0]
 
-colorsData :: [Vertex4 GLfloat]
+colorsData :: [Vertex4 Float]
 colorsData = [
   Vertex4   0.90  0.50  0.5   0.1,  -- Triangle 1
   Vertex4   0.35  0.14  0.5   0.2,

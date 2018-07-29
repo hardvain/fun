@@ -8,9 +8,9 @@ import Program
 
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,
-  positions :: [GL.Vertex4  GL.GLfloat],
+  positions :: [GL.Vertex4 Float],
   colorBufferObject :: GL.BufferObject,
-  colors :: [GL.Vertex4  GL.GLfloat],
+  colors :: [GL.Vertex4 Float],
   vao :: GL.VertexArrayObject
 }
 

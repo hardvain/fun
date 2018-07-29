@@ -23,7 +23,7 @@ createBuffer bufferTarget datum = do
     bufferData bufferTarget $= (size, ptr, StaticDraw)
   return buffer
 
-type Vertices = [GL.Vertex4 GL.GLfloat]
+type Vertices = [GL.Vertex4 Float]
 
 bufferOffset :: Integral a => a -> Ptr b
 bufferOffset = plusPtr nullPtr . fromIntegral
