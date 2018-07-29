@@ -6,6 +6,11 @@ import Foreign.Storable
 import Window
 import Foreign.Ptr
 
+data VertexAttributeDescriptor = VertexAttributeDescriptor {
+  attributeLocation :: Int,
+  dimension :: Int
+}
+
 createArrayBuffer :: (Storable a) => [a] -> IO GL.BufferObject
 createArrayBuffer = createBuffer  ArrayBuffer
 
@@ -26,11 +31,11 @@ bufferOffset = plusPtr nullPtr . fromIntegral
 getBufferSize :: (Storable a) => [a] -> GLsizeiptr
 getBufferSize datum = fromIntegral ((length datum) * sizeOf (head datum))
 
-describeAttribute :: Int -> Int -> GL.DataType -> IO AttribLocation
-describeAttribute attributeIndex dimension dataType = do
+describeAttribute :: VertexAttributeDescriptor -> IO AttribLocation
+describeAttribute (VertexAttributeDescriptor attributeIndex dimension) = do
   let attribLocation = GL.AttribLocation (fromIntegral attributeIndex)
   GL.vertexAttribPointer attribLocation GL.$=
-    (GL.ToFloat, GL.VertexArrayDescriptor (fromIntegral dimension) dataType 0 (bufferOffset 0))
+    (GL.ToFloat, GL.VertexArrayDescriptor (fromIntegral dimension) GL.Float 0 (bufferOffset 0))
   vertexAttribArray attribLocation $= Enabled
   return attribLocation
 

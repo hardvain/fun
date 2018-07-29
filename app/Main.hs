@@ -23,7 +23,14 @@ vertices = [
   Vertex3   0.90    0.90 0,
   Vertex3 (-0.85)   0.90 0]
 
-numVertices = length vertices
+colorsData :: [Vertex4 GLfloat]
+colorsData = [
+  Vertex4   0.10  0.50 0.5 1.0,  -- Triangle 1
+  Vertex4   0.35  0.14 0.5 1.0,
+  Vertex4   0.50  0.62 0.5 1.0,
+  Vertex4   0.60  0.0 0.5 1.0,  -- Triangle 2
+  Vertex4   0.20  0.20 0.5 1.0,
+  Vertex4   0.15  0.49 0.5 1.0]
 
 program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader"
 
@@ -34,19 +41,31 @@ main = do
   mesh <- createMesh vertices
   program >>= useProgram
   _ <- render win mesh
-  GLFW.destroyWindow win
-  GLFW.terminate
-
-
+  Window.closeWindow win
+  
 createMesh :: Positions -> IO Mesh
 createMesh positions = do
   vao <- createVertexArrayObject
   positionBufferObject <- withVertexArrayObject vao $ do
     positionBufferObject <- createArrayBuffer positions
-    positionAttributeLocation <- describeAttribute 0 3 GL.Float
+    let positionDescriptor = VertexAttributeDescriptor {
+      attributeLocation = 0,
+      dimension = 3
+    }
+    describeAttribute positionDescriptor
     return positionBufferObject
+  colorBufferObject <- withVertexArrayObject vao $ do
+    colorBufferObject <- createArrayBuffer colorsData
+    let colorDescriptor = VertexAttributeDescriptor {
+      attributeLocation = 1,
+      dimension = 4
+    }
+    describeAttribute colorDescriptor
+    return colorBufferObject
   return Mesh {
     positionBufferObject = positionBufferObject,
     positions = positions,
+    colors = colorsData,
+    colorBufferObject = colorBufferObject,
     vao = vao
   }
