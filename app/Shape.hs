@@ -46,8 +46,8 @@ instance Eq Color where
   _ == _ = False
 
 
-toDrawable :: Color -> Shape -> Int -> Drawable
-toDrawable clr x vertexCount = (cs,vs, vertexCount)
+toDrawable :: Color -> Shape -> Drawable
+toDrawable clr x = (cs,vs, (length vs))
     where
             vs    = map vertex $ shape x
             color = getColor clr

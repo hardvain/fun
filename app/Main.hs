@@ -39,13 +39,13 @@ main :: IO ()
 main = do
   win <- Window.createWindow 1920 1280 "Fun"
   program >>= useProgram
-  let drawables = [toDrawable Red (Square (-0.5, -0.5) 1.0)  6,
-                toDrawable Green (Circle (0.5, 0.5) 0.5 100 ) 500,
-                toDrawable Blue (Rect (-1.0,0.33) (0.0,0.66) ) 6,
+  let drawables = [toDrawable Red (Square (-0.5, -0.5) 1.0) ,
+                toDrawable Green (Circle (0.5, 0.5) 0.5 100),
+                toDrawable Blue (Rect (-1.0,0.33) (0.0,0.66)),
                 toDrawable White (Polyline [ (0.0,-0.66)
                                                 ,(0.33,-0.33)
                                                 ,(0.66,-0.66)
-                                                ,(1.0,-0.33)]  0.01  ) 100
+                                                ,(1.0,-0.33)] 0.01)
                 ]
 
   draw drawables win
