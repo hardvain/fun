@@ -51,7 +51,7 @@ createMesh (colorsData, positions, _) = do
 
 draw :: [Drawable] -> Window -> IO()
 draw drawables window = do
-  GL.clearColor $= Color4 0 0 0 1
+  GL.clearColor $= Color4 1 1 1 1
   GL.clear [ColorBuffer]
   mapM_ (render window) drawables
   GLFW.swapBuffers window

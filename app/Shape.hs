@@ -29,8 +29,8 @@ data Color = Red
           | Blue
           | White
           | Black
-          | RGB    GLclampf GLclampf GLclampf 
-          | RGBA   GLclampf GLclampf GLclampf GLclampf
+          | RGB    Float Float Float 
+          | RGBA   Float Float Float Float
           | Default
           deriving Show
 
@@ -119,9 +119,9 @@ line (x1,y1) (x2,y2) w = map (addVectors (x1,y1)) $ rotate2D' theta $ rect (0.0,
             theta = signum y * acos x                               -- | angle in radians
             len   = sqrt((x2-x1)^2+ (y2-y1)^2)
 
-getColor :: (Real a) => Color -> Color4 a
---getColor (RGB r g b)    = Color4 r g b 1
---getColor (RGBA r g b a) = Color4 r g b a
+getColor :: Color -> Color4 Float
+getColor (RGB r g b)    = Color4 r g b 1.0
+getColor (RGBA r g b a) = Color4 r g b a
 getColor x 
     | x == Red   = Color4 1 0 0 1 
     | x == Green = Color4 0 1 0 1

@@ -5,6 +5,7 @@ module Window (
 
 import qualified Graphics.UI.GLFW as GLFW
 import System.Exit ( exitWith, ExitCode(..) )
+import Graphics.Rendering.OpenGL as GL
 
 initWindow :: IO ()
 initWindow = do
@@ -21,6 +22,8 @@ createWindow width height title = do
   Just win <- GLFW.createWindow width height title Nothing Nothing
   GLFW.makeContextCurrent (Just win)
   initCallbacks win
+  GL.blendFunc $= (SrcAlpha, OneMinusSrcAlpha)
+  GL.blend GL.$= GL.Enabled
   return win
 
 initCallbacks :: GLFW.Window -> IO ()
