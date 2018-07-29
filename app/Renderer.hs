@@ -1,16 +1,10 @@
-module Renderer (
-  render,
-  Descriptor(..),
-  Mesh(..)
-) where
+module Renderer where
 
 import Graphics.Rendering.OpenGL as GL
 import Graphics.UI.GLFW as GLFW
 import Control.Monad
 import Buffer 
 import Program
-data Descriptor = Descriptor VertexArrayObject ArrayIndex NumArrayIndices
-
 
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,

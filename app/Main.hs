@@ -28,26 +28,21 @@ numVertices = length vertices
 program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader"
 
 
-initResources :: IO Mesh
-initResources = createMesh vertices
-
-
 main :: IO ()
 main = do
   win <- Window.createWindow 1920 1280 "Fun"
-  descriptor <- initResources
+  mesh <- createMesh vertices
   program >>= useProgram
-  _ <- render win descriptor
+  _ <- render win mesh
   GLFW.destroyWindow win
   GLFW.terminate
-
 
 
 createMesh :: Positions -> IO Mesh
 createMesh positions = do
   vao <- createVertexArrayObject
   positionBufferObject <- withVertexArrayObject vao $ do
-    positionBufferObject <- createPositionBuffer positions
+    positionBufferObject <- createArrayBuffer positions
     positionAttributeLocation <- describeAttribute 0 3 GL.Float
     return positionBufferObject
   return Mesh {
@@ -55,10 +50,3 @@ createMesh positions = do
     positions = positions,
     vao = vao
   }
-  -- create buffer for position
-  -- create buffer for colors
-  -- create vbo
-  -- bind position buffer
-  -- set vertex attrib pointer for position
-  -- enable the vertex attrib 
-  -- unbind vao

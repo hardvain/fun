@@ -23,9 +23,6 @@ type Positions = [GL.Vertex3 GL.GLfloat]
 bufferOffset :: Integral a => a -> Ptr b
 bufferOffset = plusPtr nullPtr . fromIntegral
 
-createPositionBuffer :: Positions -> IO GL.BufferObject
-createPositionBuffer positions = createArrayBuffer positions
-
 getBufferSize :: (Storable a) => [a] -> GLsizeiptr
 getBufferSize datum = fromIntegral ((length datum) * sizeOf (head datum))
 

@@ -1,18 +1,6 @@
-module Program (
-  createProgram,
-  useProgram,
-  Program(..),
-  VertexAttributeDescriptor(..)
-) where
+module Program  where
 import qualified Graphics.Rendering.OpenGL as GL
 import Shader
-import Foreign.Ptr
-
-
-type Dimension = Int
-type Format = GL.DataType
-data VertexAttributeDescriptor = VertexAttributeDescriptor GL.AttribLocation Format Dimension GL.Offset deriving Show
-
 
 data Program = Program {
   vertexShader :: ShaderInfo,
