@@ -14,14 +14,14 @@ import Program
 import Renderer
 
 
-vertices :: [Vertex2 GLfloat]
+vertices :: [Vertex3 GLfloat]
 vertices = [
-  Vertex2 (-0.90) (-0.90),  -- Triangle 1
-  Vertex2   0.85  (-0.90),
-  Vertex2 (-0.90)   0.85 ,
-  Vertex2   0.90  (-0.85),  -- Triangle 2
-  Vertex2   0.90    0.90 ,
-  Vertex2 (-0.85)   0.90 ]
+  Vertex3 (-0.90) (-0.90) 0,  -- Triangle 1
+  Vertex3   0.85  (-0.90) 0,
+  Vertex3 (-0.90)   0.85 0,
+  Vertex3   0.90  (-0.85) 0,  -- Triangle 2
+  Vertex3   0.90    0.90 0,
+  Vertex3 (-0.85)   0.90 0]
 
 numVertices = length vertices
 
@@ -31,35 +31,19 @@ descriptor = [ VertexAttributeDescriptor (AttribLocation 0) Float 2 0 ]
 program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader" descriptor
 
 
-initResources :: IO Descriptor
-initResources = do
-  triangles <- createVertexArrayObject
-  let firstIndex = 0
-  let vPosition = AttribLocation 0
-  vertexAttribPointer vPosition $=
-    (ToFloat, VertexArrayDescriptor 2 Float 0 (bufferOffset firstIndex))
-  withVertexArrayObject triangles $ do
-    createArrayBuffer vertices
-    
-    vertexAttribArray vPosition $= Enabled
-  program >>= useProgram
+initResources :: IO Mesh
+initResources = createMesh vertices
 
-  return $ Descriptor triangles firstIndex (fromIntegral numVertices)
 
 main :: IO ()
 main = do
   win <- Window.createWindow 1920 1280 "Fun"
   descriptor <- initResources
+  program >>= useProgram
   _ <- render win descriptor
   GLFW.destroyWindow win
   GLFW.terminate
 
-
-data Mesh = Mesh {
-  positionBufferObject :: Maybe GL.BufferObject,
-  positions :: [GL.Vertex3  GL.GLfloat],
-  vao :: Maybe GL.VertexArrayObject
-}
 
 
 createMesh :: Positions -> IO Mesh
@@ -70,9 +54,9 @@ createMesh positions = do
     positionAttributeLocation <- describeAttribute 0 3 GL.Float
     return positionBufferObject
   return Mesh {
-    positionBufferObject = Just positionBufferObject,
+    positionBufferObject = positionBufferObject,
     positions = positions,
-    vao = Just vao
+    vao = vao
   }
   -- create buffer for position
   -- create buffer for colors
