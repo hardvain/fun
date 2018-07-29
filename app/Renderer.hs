@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs #-}
 module Renderer where
 
 import Graphics.Rendering.OpenGL as GL
@@ -49,8 +51,18 @@ createMesh (colorsData, positions) = do
     vao = vao
   }
 
-draw :: Drawable -> Window -> IO()
-draw drawable window = do
+class DrawIn a where
+    drawIn :: Window -> a -> IO ()
+instance DrawIn Drawable where
+    drawIn = draw
+instance DrawIn [Drawable] where
+    drawIn ::  Window -> [Drawable] -> IO ()
+    drawIn win ds = draw  win (fromDrawables ds)
+            where
+               fromDrawables ds = (concat $ map fst ds, concat $ map snd ds)
+
+draw ::  Window -> Drawable -> IO()
+draw  window drawable = do
   let renderHint = RenderHint GL.Triangles 0 3
   mesh <- createMesh drawable
   render window mesh renderHint
