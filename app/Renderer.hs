@@ -23,7 +23,7 @@ data RenderHint = RenderHint {
 
 
 createMesh :: Drawable -> IO Mesh
-createMesh (colorsData, positions) = do
+createMesh (colorsData, positions, _) = do
   vao <- createVertexArrayObject
   positionBufferObject <- withVertexArrayObject vao $ do
     positionBufferObject <- createArrayBuffer positions
@@ -53,17 +53,17 @@ draw :: [Drawable] -> Window -> IO()
 draw drawables window = do
   GL.clearColor $= Color4 0 0 0 1
   GL.clear [ColorBuffer]
-  let renderHint = RenderHint GL.Triangles 0 3
-  mapM_ (render window renderHint) drawables
+  mapM_ (render window) drawables
   GLFW.swapBuffers window
   forever $ do
     GLFW.pollEvents
     draw drawables window
 
-render :: Window ->  RenderHint -> Drawable -> IO ()
-render window hint drawable  = do
+render :: Window ->   Drawable -> IO ()
+render window  drawable@(_,_, numVertices)  = do
+  let renderHint = RenderHint GL.Triangles 0 numVertices
   mesh <- createMesh drawable
-  renderMesh hint mesh
+  renderMesh renderHint mesh
 
 renderMesh :: RenderHint -> Mesh -> IO ()
 renderMesh hint@(RenderHint mode startIndex numVertices) mesh = withVertexArrayObject (vao mesh) $ do

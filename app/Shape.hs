@@ -8,7 +8,7 @@ type Point     =  (Float, Float)
 type Radius    =  Float
 type Side      =  Float
 type Divisions =  Int
-type Drawable  =  ([Color4 Float],[Vertex4 Float])
+type Drawable  =  ([Color4 Float],[Vertex4 Float], Int)
 
 
 
@@ -46,8 +46,8 @@ instance Eq Color where
   _ == _ = False
 
 
-toDrawable :: Color -> Shape -> Drawable
-toDrawable clr x = (cs,vs)
+toDrawable :: Color -> Shape -> Int -> Drawable
+toDrawable clr x vertexCount = (cs,vs, vertexCount)
     where
             vs    = map vertex $ shape x
             color = getColor clr
