@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Renderer where
 
 import Graphics.Rendering.OpenGL as GL
@@ -6,6 +7,8 @@ import Control.Monad
 import Buffer 
 import Program
 import Shape 
+import Data.Time.Clock.POSIX
+data UniformData  = UniformData String (GL.Vector3 GL.GLfloat)  GL.UniformLocation
 
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,
@@ -20,6 +23,7 @@ data RenderHint = RenderHint {
   startIndex :: Int,
   numVertices :: Int
 }
+
 
 
 createMesh :: Drawable -> IO Mesh
@@ -49,17 +53,23 @@ createMesh (colorsData, positions, _) = do
     vao = vao
   }
 
-draw :: [Drawable] -> Window -> IO()
-draw drawables window = do
-  GL.clearColor $= Color4 1 1 1 1
+setUniform :: Float -> UniformData ->  IO()
+setUniform time (UniformData name datum@(GL.Vector3 a b c) location) = do
+  GL.uniform location GL.$= (GL.Vector3 (a+time) (b+time) (c+time))
+  return ()
+
+draw :: [Drawable] -> Window -> [UniformData] -> IO()
+draw drawables window uniforms = do
+  GL.clearColor $= Color4 0 0 0 1
   GL.clear [ColorBuffer]
+  mapM_ (setUniform 0) uniforms
   mapM_ (render window) drawables
   GLFW.swapBuffers window
   forever $ do
     GLFW.pollEvents
-    draw drawables window
+    draw drawables window uniforms
 
-render :: Window ->   Drawable -> IO ()
+render :: Window -> Drawable -> IO ()
 render window  drawable@(_,_, numVertices)  = do
   let renderHint = RenderHint GL.Triangles 0 numVertices
   mesh <- createMesh drawable

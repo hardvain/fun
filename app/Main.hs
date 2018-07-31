@@ -13,14 +13,25 @@ import Buffer
 import Program
 import Renderer
 import Shape
+import Matrix 
 
-program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.shader" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.shader"
+program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"
+
+
+
+initializeUniforms ::  IO [UniformData]
+initializeUniforms = do
+  prog <- program
+  translateLocation <- GL.uniformLocation (glProgram prog) "translate"
+  rotateLocation <- GL.uniformLocation (glProgram prog) "rotate"
+  return [UniformData "translate" (GL.Vector3 0.1 0.1 0.1 :: GL.Vector3 GL.GLfloat) translateLocation, UniformData "rotate" (GL.Vector3 0 0 3.14 :: GL.Vector3 GL.GLfloat) rotateLocation]
 
 
 main :: IO ()
 main = do
   win <- Window.createWindow 1920 1280 "Fun"
   program >>= useProgram
+  uniforms <- initializeUniforms
   let drawables = [toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0) ,
                 toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100),
                 toDrawable (RGBA 1 0.5 0.5 0.1) (Circle (0.3, 0.3) 0.3 100),
@@ -31,6 +42,6 @@ main = do
                                                 ,(1.0,-0.33)] 0.01)
                 ]
 
-  draw drawables win
+  draw drawables win uniforms
   Window.closeWindow win
   

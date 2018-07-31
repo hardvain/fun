@@ -25,12 +25,13 @@ dependencies:
 - GLUT
 - GLFW-b
 - bytestring
+- time
 
 library:
   source-dirs: src
 
 executables:
-  fun-exe:
+  fun:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
