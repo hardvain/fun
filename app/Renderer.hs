@@ -59,15 +59,18 @@ setUniform time (UniformData name datum@(GL.Vector3 a b c) location) = do
   return ()
 
 draw :: [Drawable] -> Window -> [UniformData] -> IO()
-draw drawables window uniforms = do
-  GL.clearColor $= Color4 0 0 0 1
-  GL.clear [ColorBuffer]
-  mapM_ (setUniform 0) uniforms
-  mapM_ (render window) drawables
-  GLFW.swapBuffers window
-  forever $ do
-    GLFW.pollEvents
-    draw drawables window uniforms
+draw drawables window uniforms = draw' drawables window uniforms 0
+  where
+    draw' drawables window uniforms frameCount = do
+      GL.clearColor $= Color4 0 0 0 1
+      GL.clear [ColorBuffer]
+      mapM_ (setUniform 0) uniforms
+      mapM_ (render window) drawables
+      GLFW.swapBuffers window
+      _ <- putStrLn (show frameCount)
+      forever $ do
+        GLFW.pollEvents
+        draw' drawables window uniforms (frameCount + 1)
 
 render :: Window -> Drawable -> IO ()
 render window  drawable@(_,_, numVertices)  = do
