@@ -26,7 +26,7 @@ dependencies:
 - GLFW-b
 - bytestring
 - time
-
+- ease
 library:
   source-dirs: src
 

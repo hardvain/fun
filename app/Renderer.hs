@@ -7,7 +7,8 @@ import Control.Monad
 import Buffer 
 import Program
 import Shape 
-import Data.Time.Clock.POSIX
+import Data.Ratio
+import qualified Data.Time.Clock.POSIX as Time
 data UniformData  = UniformData String (GL.Vector3 GL.GLfloat)  GL.UniformLocation
 
 data Mesh = Mesh {
@@ -53,24 +54,36 @@ createMesh (colorsData, positions, _) = do
     vao = vao
   }
 
+timeInMicros :: IO Integer
+timeInMicros = numerator . toRational . (* 1000000) <$> Time.getPOSIXTime
+
+timeInMillis :: IO Integer
+timeInMillis = (`div` 1000) <$> timeInMicros
+
+timeInSeconds :: IO Integer
+timeInSeconds = (`div` 1000) <$> timeInMillis
+
+timeInSeconds' :: IO Double
+timeInSeconds' = (/ 1000000) . fromIntegral <$> timeInMicros
+
 setUniform :: Float -> UniformData ->  IO()
 setUniform time (UniformData name datum@(GL.Vector3 a b c) location) = do
   GL.uniform location GL.$= (GL.Vector3 (a+time) (b+time) (c+time))
   return ()
 
-draw :: [Drawable] -> Window -> [UniformData] -> IO()
-draw drawables window uniforms = draw' drawables window uniforms 0
-  where
-    draw' drawables window uniforms frameCount = do
-      GL.clearColor $= Color4 0 0 0 1
-      GL.clear [ColorBuffer]
-      mapM_ (setUniform 0) uniforms
-      mapM_ (render window) drawables
-      GLFW.swapBuffers window
-      _ <- putStrLn (show frameCount)
-      forever $ do
-        GLFW.pollEvents
-        draw' drawables window uniforms (frameCount + 1)
+draw :: [Drawable] -> Window -> [UniformData] -> Int -> Integer -> IO ()
+draw drawables window uniforms initialFrameNumber startTime = do
+  GL.clearColor $= Color4 0 0 0 1
+  GL.clear [ColorBuffer]
+  mapM_ (setUniform 0) uniforms
+  mapM_ (render window) drawables
+  GLFW.swapBuffers window
+  currentTime <- timeInMillis
+  let elapsedTime = currentTime - startTime
+  -- _ <- putStrLn ("Frames Elapsed: " ++ (show initialFrameNumber) ++ ", MillisElapsed: " ++ (show elapsedTime))
+  forever $ do
+    GLFW.pollEvents
+    draw drawables window uniforms (initialFrameNumber + 1) startTime
 
 render :: Window -> Drawable -> IO ()
 render window  drawable@(_,_, numVertices)  = do

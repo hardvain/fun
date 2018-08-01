@@ -14,9 +14,18 @@ import Program
 import Renderer
 import Shape
 import Matrix 
-
+import Ease 
 program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"
+data Tween = Tween Float Float Float Float
+instance Show Tween where
+  show (Tween _ _ steps current) = "Steps: " ++ (show steps) ++ "," ++ "Current: " ++ (show current)
 
+tween :: Tween -> (Float, Tween)
+tween (Tween initial final steps current) = 
+  let diff = final - initial
+      result = initial + ((quadOut current) * diff)
+  in
+    (result, Tween initial final (steps-1) (current+1))
 
 
 initializeUniforms ::  IO [UniformData]
@@ -32,6 +41,7 @@ main = do
   win <- Window.createWindow 1920 1280 "Fun"
   program >>= useProgram
   uniforms <- initializeUniforms
+  startTime <- timeInMillis
   let drawables = [toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0) ,
                 toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100),
                 toDrawable (RGBA 1 0.5 0.5 0.1) (Circle (0.3, 0.3) 0.3 100),
@@ -42,6 +52,6 @@ main = do
                                                 ,(1.0,-0.33)] 0.01)
                 ]
 
-  draw drawables win uniforms
+  draw drawables win uniforms 0 startTime
   Window.closeWindow win
   
