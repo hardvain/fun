@@ -8,6 +8,7 @@ import Buffer
 import Program
 import Shape 
 import Data.Ratio
+import Ease 
 import qualified Data.Time.Clock.POSIX as Time
 data UniformData  = UniformData String (GL.Vector3 GL.GLfloat)  GL.UniformLocation
 
@@ -72,18 +73,20 @@ setUniform time (UniformData name datum@(GL.Vector3 a b c) location) = do
   return ()
 
 draw :: [Drawable] -> Window -> [UniformData] -> Int -> Integer -> IO ()
-draw drawables window uniforms initialFrameNumber startTime = do
+draw drawables window uniforms frameNumber startTime = do
   GL.clearColor $= Color4 0 0 0 1
-  GL.clear [ColorBuffer]
-  mapM_ (setUniform 0) uniforms
-  mapM_ (render window) drawables
-  GLFW.swapBuffers window
   currentTime <- timeInMillis
   let elapsedTime = currentTime - startTime
-  -- _ <- putStrLn ("Frames Elapsed: " ++ (show initialFrameNumber) ++ ", MillisElapsed: " ++ (show elapsedTime))
+  GL.clear [ColorBuffer]
+  let value = (fromIntegral (mod (fromIntegral elapsedTime) 1000)) * 0.001
+  mapM_ (setUniform value) uniforms
+  mapM_ (render window) drawables
+  GLFW.swapBuffers window
+  _ <- putStrLn (show frameNumber)
+  -- _ <- putStrLn ("Frames Elapsed: " ++ (show frameNumber) ++ ", MillisElapsed: " ++ (show elapsedTime))
   forever $ do
     GLFW.pollEvents
-    draw drawables window uniforms (initialFrameNumber + 1) startTime
+    draw drawables window uniforms (frameNumber + 1) startTime
 
 render :: Window -> Drawable -> IO ()
 render window  drawable@(_,_, numVertices)  = do
