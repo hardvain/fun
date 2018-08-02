@@ -20,6 +20,7 @@ data Mesh = Mesh {
   vao :: GL.VertexArrayObject
 }
 
+
 data RenderHint = RenderHint {
   primitiveMode :: GL.PrimitiveMode,
   startIndex :: Int,
@@ -32,13 +33,7 @@ createMesh (colorsData, positions, _) = do
   vao <- createVertexArrayObject
   positionBufferObject <- withVertexArrayObject vao (createAndDescribeBuffer positions 0 4)
   colorBufferObject <- withVertexArrayObject vao (createAndDescribeBuffer colorsData 1 4)
-  return Mesh {
-    positionBufferObject = positionBufferObject,
-    positions = positions,
-    colors = colorsData,
-    colorBufferObject = colorBufferObject,
-    vao = vao
-  }
+  return $ Mesh positionBufferObject positions colorBufferObject colorsData  vao 
 
 setClearColor :: Color4 GL.GLfloat -> IO()
 setClearColor color = do
@@ -67,10 +62,10 @@ draw drawables window uniforms frameNumber startTime = do
     draw drawables window uniforms (frameNumber + 1) startTime
 
 renderDrawables :: Window -> [Drawable] -> IO()
-renderDrawables window = mapM_ (render window)
+renderDrawables window = mapM_ (renderDrawable window)
 
-render :: Window -> Drawable -> IO ()
-render window  drawable@(_,_, numVertices)  = do
+renderDrawable :: Window -> Drawable -> IO ()
+renderDrawable window  drawable@(_,_, numVertices)  = do
   let renderHint = RenderHint GL.Triangles 0 numVertices
   mesh <- createMesh drawable
   renderMesh renderHint mesh
