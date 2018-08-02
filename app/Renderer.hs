@@ -86,3 +86,12 @@ render window  drawable@(_,_, numVertices)  = do
 renderMesh :: RenderHint -> Mesh -> IO ()
 renderMesh hint@(RenderHint mode startIndex numVertices) mesh = withVertexArrayObject (vao mesh) $ do
   drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
+
+renderSceneGraph :: Window -> SceneGraph -> IO ()
+renderSceneGraph window (SceneGraph Empty) = return ()
+renderSceneGraph window (SceneGraph tree) = renderTree window tree
+
+renderTree :: Window -> Tree Drawable -> IO()
+renderTree window (Node drawable trees transformation) = do
+  render window drawable
+  mapM_ (renderTree window) trees
