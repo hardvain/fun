@@ -27,6 +27,7 @@ dependencies:
 - bytestring
 - time
 - ease
+- data-default
 library:
   source-dirs: src
 

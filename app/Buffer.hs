@@ -38,6 +38,7 @@ bufferOffset = plusPtr nullPtr . fromIntegral
 getBufferSize :: (Storable a) => [a] -> GLsizeiptr
 getBufferSize datum = fromIntegral ((length datum) * sizeOf (head datum))
 
+
 describeAttribute :: VertexAttributeDescriptor -> IO AttribLocation
 describeAttribute (VertexAttributeDescriptor attributeIndex dimension) = do
   let attribLocation = GL.AttribLocation (fromIntegral attributeIndex)
