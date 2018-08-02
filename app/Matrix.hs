@@ -1,10 +1,15 @@
 module Matrix where
 
 
-data GLMatrix a =
-  GLMatrix !a !a !a !a
+data Matrix a =
+  Matrix !a !a !a !a
            !a !a !a !a
            !a !a !a !a
            !a !a !a !a
              deriving Eq
 
+defaultMatrix :: [Float]
+defaultMatrix = [ 1.0, 0.0, 0.0, 0.0
+  , 0.0, 1.0, 0.0, 0.0
+  , 0.0, 0.0, 1.0, 0.0
+  , 0.0, 0.0, 0.0, 0.5 ]  

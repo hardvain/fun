@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ExistentialQuantification #-}
 module Renderer where
 
 import Graphics.Rendering.OpenGL as GL
@@ -11,9 +12,10 @@ import Data.Ratio
 import Ease 
 import Time
 import AST
+import Matrix as M
 import qualified Data.Time.Clock.POSIX as Time
 
-data UniformData  = UniformData String (GL.Vector3 GL.GLfloat)  GL.UniformLocation
+data UniformData  a = UniformData String a GL.UniformLocation
 
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,
@@ -57,12 +59,12 @@ createMesh (colorsData, positions, _) = do
   }
 
 
-setUniform :: Float -> UniformData ->  IO()
-setUniform time (UniformData name datum@(GL.Vector3 a b c) location) = do
-  GL.uniform location GL.$= (GL.Vector3 (a+time) (b+time) (c+time))
-  return ()
+setUniform :: (Uniform a) => Float -> UniformData a ->  IO()
+setUniform time (UniformData name datum location) = 
+  GL.uniform location GL.$= datum
+  
 
-draw :: SceneGraph -> Window -> [UniformData] -> Int -> Integer -> IO ()
+draw :: (Uniform a) => SceneGraph -> Window -> [UniformData a] -> Int -> Integer -> IO ()
 draw sceneGraph window uniforms frameNumber startTime = do
   GL.clearColor $= Color4 0 0 0 1
   currentTime <- timeInMillis

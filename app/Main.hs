@@ -21,15 +21,27 @@ import AST
 program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"
 
 
-initializeUniforms ::  IO [UniformData]
+initializeUniforms ::  IO [UniformData (GL.GLmatrix GL.GLfloat)]
 initializeUniforms = do
   prog <- program
-  translateLocation <- GL.uniformLocation (glProgram prog) "translate"
-  rotateLocation <- GL.uniformLocation (glProgram prog) "rotate"
-  return [UniformData "translate" (GL.Vector3 0.1 0.1 0.1 :: GL.Vector3 GL.GLfloat) translateLocation, UniformData "rotate" (GL.Vector3 0 0 3.14 :: GL.Vector3 GL.GLfloat) rotateLocation]
+  transformLocation <- GL.uniformLocation (glProgram prog) "transform"
+  transform <- GL.newMatrix GL.ColumnMajor defaultMatrix :: IO (GL.GLmatrix GL.GLfloat)
+  return [UniformData "transform" transform transformLocation]
+
+position :: Position
+position = Position 0 0 0
+
+rotation :: Rotation
+rotation = Rotation 0 0 0
+
+scale :: Scale
+scale = Scale 0 0 0
+
+transformation :: Transformation
+transformation = Transformation position rotation scale
 
 sceneGraph :: SceneGraph
-sceneGraph = SceneGraph (Node (toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)) [] Nothing)
+sceneGraph = SceneGraph (Node (toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)) [] (Just transformation))
 
 main :: IO ()
 main = do
