@@ -16,6 +16,7 @@ import Shape
 import Matrix 
 import Ease 
 import Time
+import AST
 
 program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"
 
@@ -27,6 +28,8 @@ initializeUniforms = do
   rotateLocation <- GL.uniformLocation (glProgram prog) "rotate"
   return [UniformData "translate" (GL.Vector3 0.1 0.1 0.1 :: GL.Vector3 GL.GLfloat) translateLocation, UniformData "rotate" (GL.Vector3 0 0 3.14 :: GL.Vector3 GL.GLfloat) rotateLocation]
 
+sceneGraph :: SceneGraph
+sceneGraph = SceneGraph (Node (toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)) [] Nothing)
 
 main :: IO ()
 main = do
@@ -34,16 +37,16 @@ main = do
   program >>= useProgram
   uniforms <- initializeUniforms
   startTime <- timeInMillis
-  let drawables = [toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0) ,
-                toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100),
-                toDrawable (RGBA 1 0.5 0.5 0.1) (Circle (0.3, 0.3) 0.3 100),
-                toDrawable Blue (Rect (-1.0,0.33) (0.0,0.66)),
-                toDrawable White (Polyline [ (0.0,-0.66)
-                                                ,(0.33,-0.33)
-                                                ,(0.66,-0.66)
-                                                ,(1.0,-0.33)] 0.01)
-                ]
+  -- let drawables = [toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0) ,
+  --               toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100),
+  --               toDrawable (RGBA 1 0.5 0.5 0.1) (Circle (0.3, 0.3) 0.3 100),
+  --               toDrawable Blue (Rect (-1.0,0.33) (0.0,0.66)),
+  --               toDrawable White (Polyline [ (0.0,-0.66)
+  --                                               ,(0.33,-0.33)
+  --                                               ,(0.66,-0.66)
+  --                                               ,(1.0,-0.33)] 0.01)
+  --               ]
 
-  draw drawables win uniforms 0 startTime
+  draw sceneGraph win uniforms 0 startTime
   Window.closeWindow win
   

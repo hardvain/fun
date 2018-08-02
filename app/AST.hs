@@ -48,6 +48,6 @@ applyEasing fromeNumber millisElapsed state@(EasingState easingFunction (Just (s
     delta = valueDifference * easedValue
 
 data Transformation = Transformation Position Rotation Scale
-data Tree a = Empty | Node a [Tree a] Transformation
+data Tree a = Empty | Node a [Tree a] (Maybe Transformation)
 data SceneGraph = SceneGraph (Tree Drawable)
   
