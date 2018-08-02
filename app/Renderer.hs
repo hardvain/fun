@@ -7,9 +7,9 @@ import Control.Monad
 import Buffer 
 import Program
 import Shape 
-import Data.Ratio
 import Ease 
-import qualified Data.Time.Clock.POSIX as Time
+import Time
+
 data UniformData  = UniformData String (GL.Vector3 GL.GLfloat)  GL.UniformLocation
 
 data Mesh = Mesh {
@@ -27,26 +27,11 @@ data RenderHint = RenderHint {
 }
 
 
-
 createMesh :: Drawable -> IO Mesh
 createMesh (colorsData, positions, _) = do
   vao <- createVertexArrayObject
-  positionBufferObject <- withVertexArrayObject vao $ do
-    positionBufferObject <- createArrayBuffer positions
-    let positionDescriptor = VertexAttributeDescriptor {
-      attributeLocation = 0,
-      dimension = 4
-    }
-    describeAttribute positionDescriptor
-    return positionBufferObject
-  colorBufferObject <- withVertexArrayObject vao $ do
-    colorBufferObject <- createArrayBuffer colorsData
-    let colorDescriptor = VertexAttributeDescriptor {
-      attributeLocation = 1,
-      dimension = 4
-    }
-    describeAttribute colorDescriptor
-    return colorBufferObject
+  positionBufferObject <- withVertexArrayObject vao (createAndDescribeBuffer positions 0 4)
+  colorBufferObject <- withVertexArrayObject vao (createAndDescribeBuffer colorsData 1 4)
   return Mesh {
     positionBufferObject = positionBufferObject,
     positions = positions,
@@ -55,38 +40,34 @@ createMesh (colorsData, positions, _) = do
     vao = vao
   }
 
-timeInMicros :: IO Integer
-timeInMicros = numerator . toRational . (* 1000000) <$> Time.getPOSIXTime
-
-timeInMillis :: IO Integer
-timeInMillis = (`div` 1000) <$> timeInMicros
-
-timeInSeconds :: IO Integer
-timeInSeconds = (`div` 1000) <$> timeInMillis
-
-timeInSeconds' :: IO Double
-timeInSeconds' = (/ 1000000) . fromIntegral <$> timeInMicros
+setClearColor :: Color4 GL.GLfloat -> IO()
+setClearColor color = do
+  GL.clearColor $= Color4 0 0 0 1
+  GL.clear [ColorBuffer]
 
 setUniform :: Float -> UniformData ->  IO()
 setUniform time (UniformData name datum@(GL.Vector3 a b c) location) = do
   GL.uniform location GL.$= (GL.Vector3 (a+time) (b+time) (c+time))
   return ()
 
+setUniforms :: [UniformData] -> IO()
+setUniforms = mapM_ (setUniform 0) 
+
 draw :: [Drawable] -> Window -> [UniformData] -> Int -> Integer -> IO ()
 draw drawables window uniforms frameNumber startTime = do
-  GL.clearColor $= Color4 0 0 0 1
+  setClearColor $ Color4 0 0 0 1
   currentTime <- timeInMillis
   let elapsedTime = currentTime - startTime
-  GL.clear [ColorBuffer]
   let value = (fromIntegral (mod (fromIntegral elapsedTime) 1000)) * 0.001
-  mapM_ (setUniform value) uniforms
-  mapM_ (render window) drawables
+  setUniforms uniforms
+  renderDrawables window drawables
   GLFW.swapBuffers window
-  _ <- putStrLn (show frameNumber)
-  -- _ <- putStrLn ("Frames Elapsed: " ++ (show frameNumber) ++ ", MillisElapsed: " ++ (show elapsedTime))
   forever $ do
     GLFW.pollEvents
     draw drawables window uniforms (frameNumber + 1) startTime
+
+renderDrawables :: Window -> [Drawable] -> IO()
+renderDrawables window = mapM_ (render window)
 
 render :: Window -> Drawable -> IO ()
 render window  drawable@(_,_, numVertices)  = do

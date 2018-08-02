@@ -11,6 +11,16 @@ data VertexAttributeDescriptor = VertexAttributeDescriptor {
   dimension :: Int
 }
 
+createAndDescribeBuffer :: (Storable a) => [a] -> Int -> Int -> IO GL.BufferObject
+createAndDescribeBuffer datum location dimension = do
+  bufferObject <- createArrayBuffer datum
+  let descriptor = VertexAttributeDescriptor {
+    attributeLocation = location,
+    dimension = dimension
+  }
+  describeAttribute descriptor
+  return bufferObject
+
 createArrayBuffer :: (Storable a) => [a] -> IO GL.BufferObject
 createArrayBuffer = createBuffer  ArrayBuffer
 

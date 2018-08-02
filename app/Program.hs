@@ -1,7 +1,6 @@
 module Program  where
 import qualified Graphics.Rendering.OpenGL as GL
 import Shader
-
 data Program = Program {
   vertexShader :: ShaderInfo,
   glProgram :: GL.Program,

@@ -15,7 +15,9 @@ import Renderer
 import Shape
 import Matrix 
 import Ease 
-program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"
+import Time
+
+program = Program.createProgram "/Users/asridaran/Projects/haskell/fun/shaders/vertex.vert" "/Users/asridaran/Projects/haskell/fun/shaders/fragment.frag"
 data Tween = Tween Float Float Float Float
 instance Show Tween where
   show (Tween _ _ steps current) = "Steps: " ++ (show steps) ++ "," ++ "Current: " ++ (show current)
