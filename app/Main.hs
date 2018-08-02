@@ -18,16 +18,6 @@ import Ease
 import Time
 
 program = Program.createProgram "/Users/asridaran/Projects/haskell/fun/shaders/vertex.vert" "/Users/asridaran/Projects/haskell/fun/shaders/fragment.frag"
-data Tween = Tween Float Float Float Float
-instance Show Tween where
-  show (Tween _ _ steps current) = "Steps: " ++ (show steps) ++ "," ++ "Current: " ++ (show current)
-
-tween :: Tween -> (Float, Tween)
-tween (Tween initial final steps current) = 
-  let diff = final - initial
-      result = initial + ((quadOut current) * diff)
-  in
-    (result, Tween initial final (steps-1) (current+1))
 
 
 initializeUniforms ::  IO [UniformData]

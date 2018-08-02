@@ -1,21 +1,18 @@
 module Program  where
 import qualified Graphics.Rendering.OpenGL as GL
 import Shader
+
 data Program = Program {
   vertexShader :: ShaderInfo,
-  glProgram :: GL.Program,
-  fragmentShader :: ShaderInfo
+  fragmentShader :: ShaderInfo,
+  glProgram :: GL.Program
 }
 
 
 createProgram :: String -> String -> IO Program
 createProgram vertexShaderPath fragmentShaderPath = do
   glProgram <- loadShaders [vertexShaderInfo, fragmentShaderInfo]
-  return Program {
-    vertexShader = vertexShaderInfo,
-    fragmentShader = fragmentShaderInfo,
-    glProgram = glProgram
-  }
+  return $ Program vertexShaderInfo fragmentShaderInfo glProgram
   where 
     vertexShaderInfo = ShaderInfo GL.VertexShader (FileSource vertexShaderPath)
     fragmentShaderInfo = ShaderInfo GL.FragmentShader (FileSource fragmentShaderPath) 
