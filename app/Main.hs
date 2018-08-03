@@ -56,9 +56,11 @@ main = do
   defaultProgram >>= useProgram
   uniforms <- initializeUniforms
   startTime <- timeInMillis
-  let drawable = toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)
-  let renderable = Renderable drawable defaultTransformation defaultMatrix
-  let sceneGraph = SceneGraph (Node renderable [])
+  let square = toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)
+  let circle = toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100)
+  let squareRenderable = Renderable square defaultTransformation defaultMatrix
+  let circleRenderable = Renderable circle defaultTransformation defaultMatrix
+  let sceneGraph = SceneGraph (Node squareRenderable [Node circleRenderable []])
   let startingFrameNumber = 0
   -- let drawables = [toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0) ,
   --               toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100),
