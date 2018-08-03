@@ -17,8 +17,7 @@ import Matrix
 import Ease 
 import Time
 import AST
-import Data.Matrix 
-
+import Data.Matrix
 
 initializeUniforms ::  IO [UniformData (GL.GLmatrix GL.GLfloat)]
 initializeUniforms = do
@@ -39,8 +38,19 @@ scale = Scale 0 0 0
 transformation :: Transformation
 transformation = Transformation position rotation scale
 
-sceneGraph :: SceneGraph
-sceneGraph = SceneGraph (Node (toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)) [] (Just transformation))
+defaultPosition :: Position
+defaultPosition = Position 0 0 0
+
+defaultRotation :: Rotation
+defaultRotation = Rotation 0 0 0
+
+defaultScale :: Scale
+defaultScale = Scale 1 1 1
+
+defaultTransformation :: Transformation
+defaultTransformation = Transformation defaultPosition defaultRotation defaultScale
+
+
 
 main :: IO ()
 main = do
@@ -48,6 +58,9 @@ main = do
   defaultProgram >>= useProgram
   uniforms <- initializeUniforms
   startTime <- timeInMillis
+  let drawable = toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)
+  let renderable = Renderable drawable defaultTransformation defaultMatrix
+  let sceneGraph = SceneGraph (Node renderable [])
   let startingFrameNumber = 0
   -- let drawables = [toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0) ,
   --               toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100),

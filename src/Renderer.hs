@@ -57,21 +57,21 @@ draw sceneGraph window uniforms frameNumber startTime = do
     GLFW.pollEvents
     draw sceneGraph window uniforms (frameNumber + 1) startTime
 
-render :: Window -> Drawable -> IO ()
-render window  drawable@(Drawable _ _ numVertices)  = do
+render :: Window -> Renderable -> IO ()
+render window (Renderable  drawable@(Drawable _ _ numVertices) _ _) = do
   let renderHint = RenderHint GL.Triangles 0 numVertices
   mesh <- createMesh drawable
   renderMesh renderHint mesh
 
 renderMesh :: RenderHint -> Mesh -> IO ()
-renderMesh hint@(RenderHint mode startIndex numVertices) mesh = withVertexArrayObject (vao mesh) $ do
+renderMesh (RenderHint mode startIndex numVertices) mesh = withVertexArrayObject (vao mesh) $ do
   drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
 
 renderSceneGraph :: Window -> SceneGraph -> IO ()
 renderSceneGraph window (SceneGraph tree) = renderTree window tree
 
-renderTree :: Window -> Tree Drawable -> IO ()
+renderTree :: Window -> Tree Renderable -> IO ()
 renderTree window Empty = return ()
-renderTree window (Node drawable trees transformation) = do
-  render window drawable
+renderTree window (Node renderable trees) = do
+  render window renderable
   mapM_ (renderTree window) trees
