@@ -20,3 +20,4 @@ projection degrees aspectRatio nearZ farZ = fromList 4 4 matrix
 
 projectionMatrix :: Matrix Float
 projectionMatrix = projection 45 1 0.01 100
+
