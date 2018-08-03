@@ -1,6 +1,6 @@
 module Main where
 import qualified Graphics.Rendering.OpenGL as GL
-import Graphics.UI.GLFW as GLFW
+import qualified Graphics.UI.GLFW as GLFW
 import Control.Monad
 import System.Exit ( exitWith, ExitCode(..) )
 import Shader
@@ -18,14 +18,11 @@ import Ease
 import Time
 import AST
 import Data.Matrix 
-program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"
 
-projectionMatrix :: Matrix Float
-projectionMatrix = projection 45 1 0.01 100
 
 initializeUniforms ::  IO [UniformData (GL.GLmatrix GL.GLfloat)]
 initializeUniforms = do
-  prog <- program
+  prog <- defaultProgram
   transformLocation <- GL.uniformLocation (glProgram prog) "transform"
   transform <- GL.newMatrix GL.ColumnMajor (toList defaultMatrix) :: IO (GL.GLmatrix GL.GLfloat)
   return [UniformData "transform" transform transformLocation]
@@ -47,10 +44,11 @@ sceneGraph = SceneGraph (Node (toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0
 
 main :: IO ()
 main = do
-  win <- Window.createWindow 1920 1280 "Fun"
-  program >>= useProgram
+  window <- createWindow 1920 1280 "Fun"
+  defaultProgram >>= useProgram
   uniforms <- initializeUniforms
   startTime <- timeInMillis
+  let startingFrameNumber = 0
   -- let drawables = [toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0) ,
   --               toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100),
   --               toDrawable (RGBA 1 0.5 0.5 0.1) (Circle (0.3, 0.3) 0.3 100),
@@ -61,6 +59,6 @@ main = do
   --                                               ,(1.0,-0.33)] 0.01)
   --               ]
 
-  draw sceneGraph win uniforms 0 startTime
-  Window.closeWindow win
+  draw sceneGraph window uniforms startingFrameNumber startTime
+  closeWindow window
   

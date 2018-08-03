@@ -57,3 +57,10 @@ withVertexArrayObject vertexObject action = do
   bindVertexArrayObject $= Nothing
   return result
 
+
+withNewVertexArrayObject :: (VertexArrayObject -> IO a) -> IO a
+withNewVertexArrayObject f = do
+  vao <- createVertexArrayObject
+  withVertexArrayObject vao $ f vao
+
+  

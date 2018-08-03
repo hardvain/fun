@@ -20,3 +20,5 @@ createProgram vertexShaderPath fragmentShaderPath = do
 useProgram :: Program -> IO ()
 useProgram program = do
   GL.currentProgram GL.$= Just (glProgram program) 
+
+defaultProgram = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"

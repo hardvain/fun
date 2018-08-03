@@ -31,13 +31,11 @@ data RenderHint = RenderHint {
 }
 
 createMesh :: Drawable -> IO Mesh
-createMesh drawablw@(Drawable positions colorsData _) = do
-  vao <- createVertexArrayObject
-  withVertexArrayObject vao $ do
+createMesh (Drawable positions colorsData _) = do
+  withNewVertexArrayObject $ \vao -> do
     positionBufferObject <- createAndDescribeBuffer positions 0 4
     colorBufferObject <- createAndDescribeBuffer colorsData 1 4
     return $ Mesh positionBufferObject positions colorBufferObject colorsData  vao
-
 
 setUniform :: (Uniform a) => Float -> UniformData a ->  IO ()
 setUniform time (UniformData name datum location) = 

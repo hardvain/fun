@@ -2,7 +2,6 @@ module Matrix where
 
 import Data.Matrix
 
-
 defaultMatrix :: Matrix Float
 defaultMatrix = identity 4 
 
@@ -18,3 +17,6 @@ projection degrees aspectRatio nearZ farZ = fromList 4 4 matrix
               0, y, 0, 0,
               0, 0, z, -1,
               0, 0, 0, w]
+
+projectionMatrix :: Matrix Float
+projectionMatrix = projection 45 1 0.01 100
