@@ -50,8 +50,6 @@ defaultScale = Scale 1 1 1
 defaultTransformation :: Transformation
 defaultTransformation = Transformation defaultPosition defaultRotation defaultScale
 
-
-
 main :: IO ()
 main = do
   window <- createWindow 1920 1280 "Fun"

@@ -2,7 +2,8 @@ module AST where
 
 import Data.Matrix
 import Ease
-import Graphics.Rendering.OpenGL (Vertex4(..), Color4(..), GLclampf(..))
+import Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
+
 
 type Points    =  [Point]
 type Point     =  (Float, Float)
@@ -12,8 +13,26 @@ type Divisions =  Int
 type MVPMatrix = Matrix Float
 data ProgramType = DefaultProg
 
-data Renderable = Renderable Drawable Transformation MVPMatrix
+data Renderable = Renderable {
+  drawable:: Drawable,
+  transformation :: Transformation,
+  mvpMatrix ::  MVPMatrix
+}
 
+data UniformData  a = UniformData String a GL.UniformLocation
+
+data Mesh = Mesh {
+  positionBufferObject :: GL.BufferObject,
+  colorBufferObject :: GL.BufferObject,
+  vao :: GL.VertexArrayObject,
+  renderable :: Renderable
+}
+
+data RenderHint = RenderHint {
+  primitiveMode :: GL.PrimitiveMode,
+  startIndex :: Int,
+  numVertices :: Int
+}
 data DrawingState = DrawingState {
   programType :: ProgramType
 }
@@ -35,8 +54,14 @@ type Animation a = (FrameNumber, MillisElapsed) -> a
 data EasingFunction = BounceOut | BounceIn | BounceInOut
 
 data Transformation = Transformation Position Rotation Scale
+
 data Tree a = Empty | Node a [Tree a]
-data SceneGraph = SceneGraph (Tree Renderable)
+
+instance Functor Tree where
+  fmap f Empty = Empty
+  fmap f (Node a xs) = Node (f a) (fmap (fmap f) xs)
+
+data SceneGraph a = SceneGraph (Tree a)
 
 data EasingState = EasingState {
   easingFunction :: EasingFunction,
