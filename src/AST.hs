@@ -26,6 +26,10 @@ type Animation a = (FrameNumber, MillisElapsed) -> a
 
 data EasingFunction = BounceOut | BounceIn | BounceInOut
 
+data Transformation = Transformation Position Rotation Scale
+data Tree a = Empty | Node a [Tree a] (Maybe Transformation)
+data SceneGraph = SceneGraph (Tree Drawable)
+
 data EasingState = EasingState {
   easingFunction :: EasingFunction,
   activeTime :: Maybe (Int, Int),
@@ -58,8 +62,3 @@ applyEasing fromeNumber millisElapsed state@(EasingState easingFunction (Just (s
     easedValue = bounceInOut normalisedProgress
     valueDifference = to - from
     delta = valueDifference * easedValue
-
-data Transformation = Transformation Position Rotation Scale
-data Tree a = Empty | Node a [Tree a] (Maybe Transformation)
-data SceneGraph = SceneGraph (Tree Drawable)
-  

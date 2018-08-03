@@ -39,11 +39,11 @@ instance Eq Color where
 
 
 toDrawable :: Color -> Shape -> Drawable
-toDrawable clr x = Drawable vs cs (length vs)
+toDrawable clr x = Drawable vertices colors (length vertices)
     where
-            vs    = map vertex $ shape x
-            color = getColor clr
-            cs    = map (\x -> color) $ vs
+      vertices  = map vertex $ shape x
+      color     = getColor clr
+      colors    = map (\x -> color) $ vertices
 
 
 vertex :: Point -> Vertex4 Float

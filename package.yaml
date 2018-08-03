@@ -26,7 +26,6 @@ dependencies:
 - GLFW-b
 - bytestring
 - time
-- ease
 - data-default
 - matrix
 library:
