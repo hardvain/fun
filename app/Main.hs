@@ -72,6 +72,6 @@ main = do
   --                                               ,(1.0,-0.33)] 0.01)
   --               ]
 
-  draw sceneGraph window uniforms startingFrameNumber startTime
+  draw sceneGraph window startingFrameNumber startTime
   closeWindow window
   
