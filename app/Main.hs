@@ -19,12 +19,6 @@ import Time
 import AST
 import Data.Matrix
 
-initializeUniforms ::  IO [UniformData (GL.GLmatrix GL.GLfloat)]
-initializeUniforms = do
-  prog <- defaultProgram
-  transformLocation <- GL.uniformLocation (glProgram prog) "transform"
-  transform <- GL.newMatrix GL.ColumnMajor (toList defaultMatrix) :: IO (GL.GLmatrix GL.GLfloat)
-  return [UniformData "transform" transform transformLocation]
 
 position :: Position
 position = Position 0 0 0
@@ -54,7 +48,6 @@ main :: IO ()
 main = do
   window <- createWindow 1920 1280 "Fun"
   defaultProgram >>= useProgram
-  uniforms <- initializeUniforms
   startTime <- timeInMillis
   let square = toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)
   let circle = toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100)

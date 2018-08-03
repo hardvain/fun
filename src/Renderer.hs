@@ -31,9 +31,13 @@ populateMeshes :: SceneGraph Renderable -> SceneGraph Mesh
 populateMeshes (SceneGraph tree) =  SceneGraph $ fmap (unsafePerformIO . createMesh) tree
 
     
-setUniform :: (Uniform a) => UniformData a ->  IO ()
-setUniform (UniformData name datum location) = 
-  GL.uniform location GL.$= datum
+setUniform :: Renderable ->  IO ()
+setUniform renderableObj = do
+  let matrix = mvpMatrix renderableObj
+  prog <- defaultProgram
+  transformLocation <- GL.uniformLocation (glProgram prog) "transform"
+  datum <- GL.newMatrix GL.ColumnMajor (toList matrix) :: IO (GL.GLmatrix GL.GLfloat)
+  GL.uniform transformLocation GL.$= datum
   
 setClearColor :: Color4 Float -> IO ()
 setClearColor color = do
@@ -59,11 +63,7 @@ drawLoop sceneGraph window frameNumber startTime = do
 render :: Window -> Mesh -> IO ()
 render window mesh = do
   let renderableObj = renderable mesh
-  let matrix = mvpMatrix renderableObj
-  prog <- defaultProgram
-  transformLocation <- GL.uniformLocation (glProgram prog) "transform"
-  transform <- GL.newMatrix GL.ColumnMajor (toList matrix) :: IO (GL.GLmatrix GL.GLfloat)
-  setUniform $ UniformData "transform" transform transformLocation
+  setUniform renderableObj
   let renderHint = RenderHint GL.Triangles 0 (numberOfVertices . drawable $ renderableObj)
   renderMesh renderHint mesh
 
