@@ -17,7 +17,7 @@ import Matrix
 import Ease 
 import Time
 import AST
-
+import Data.Matrix 
 program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"
 
 
@@ -25,7 +25,7 @@ initializeUniforms ::  IO [UniformData (GL.GLmatrix GL.GLfloat)]
 initializeUniforms = do
   prog <- program
   transformLocation <- GL.uniformLocation (glProgram prog) "transform"
-  transform <- GL.newMatrix GL.ColumnMajor defaultMatrix :: IO (GL.GLmatrix GL.GLfloat)
+  transform <- GL.newMatrix GL.ColumnMajor (toList defaultMatrix) :: IO (GL.GLmatrix GL.GLfloat)
   return [UniformData "transform" transform transformLocation]
 
 position :: Position
