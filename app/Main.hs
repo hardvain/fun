@@ -20,6 +20,8 @@ import AST
 import Data.Matrix 
 program = Program.createProgram "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/vertex.vert" "/Users/aravindhs/Aravindh/projects/haskell/fun/shaders/fragment.frag"
 
+projectionMatrix :: Matrix Float
+projectionMatrix = projection 45 1 0.01 100
 
 initializeUniforms ::  IO [UniformData (GL.GLmatrix GL.GLfloat)]
 initializeUniforms = do

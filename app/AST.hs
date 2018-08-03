@@ -1,7 +1,19 @@
 module AST where
 
-import Shape 
 import Ease
+import Graphics.Rendering.OpenGL (Vertex4(..), Color4(..), GLclampf(..))
+
+type Points    =  [Point]
+type Point     =  (Float, Float)
+type Radius    =  Float
+type Side      =  Float
+type Divisions =  Int
+
+data Drawable = Drawable {
+  vertices :: [Vertex4 Float],
+  colors :: [Color4 Float],
+  numberOfVertices :: Int
+}
 
 data Position = Position Float Float Float
 data Rotation = Rotation Float Float Float

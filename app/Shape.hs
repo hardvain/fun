@@ -1,18 +1,10 @@
 module Shape where
-
+import AST
 import Graphics.Rendering.OpenGL (Vertex4(..), Color4(..), GLclampf(..))
 import Utils 
 
-type Points    =  [Point]
-type Point     =  (Float, Float)
-type Radius    =  Float
-type Side      =  Float
-type Divisions =  Int
-type Drawable  =  ([Color4 Float],[Vertex4 Float], Int)
 
-
-
-data Shape = Circle    Point   Radius Divisions
+data Shape = Circle   Point   Radius Divisions
           | Square    Point   Side
           | Rect      Point   Point
           | Line      Point   Point  Float  -- | Ordered pair to store directionality
@@ -47,7 +39,7 @@ instance Eq Color where
 
 
 toDrawable :: Color -> Shape -> Drawable
-toDrawable clr x = (cs,vs, (length vs))
+toDrawable clr x = Drawable vs cs (length vs)
     where
             vs    = map vertex $ shape x
             color = getColor clr
