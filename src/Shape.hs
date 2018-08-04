@@ -3,6 +3,7 @@ import AST
 import Graphics.Rendering.OpenGL (Vertex4(..), Color4(..), GLclampf(..))
 import Utils 
 import Renderable
+import Color 
 
 data Shape = Circle   Point   Radius Divisions
           | Square    Point   Side
@@ -15,27 +16,6 @@ data Shape = Circle   Point   Radius Divisions
           | Curve    [Point]
           deriving Show
 
-
-data Color = Red
-          | Green
-          | Blue
-          | White
-          | Black
-          | RGB    Float Float Float 
-          | RGBA   Float Float Float Float
-          | Default
-          deriving Show
-
-instance Eq Color where
-  Red          == Red   = True
-  Green        == Green = True
-  Blue         == Blue  = True
-  White        == White = True
-  Black        == Black = True
-  RGB _ _ _    == RGB _ _ _    = True
-  RGBA _ _ _ _ == RGBA _ _ _ _ = True
-  Default      == Default      = True
-  _ == _ = False
 
 
 toDrawable :: Color -> Shape -> Drawable

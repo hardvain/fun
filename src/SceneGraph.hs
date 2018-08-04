@@ -20,3 +20,6 @@ data SceneGraph a = SceneGraph (Tree a)
 instance Functor SceneGraph where
   fmap f (SceneGraph tree) = SceneGraph (fmap f tree)
   
+
+makeSceneGraph :: a -> SceneGraph a
+makeSceneGraph a = SceneGraph (makeNode a)
