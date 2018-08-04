@@ -16,6 +16,7 @@ import qualified Data.Time.Clock.POSIX as Time
 import System.IO.Unsafe
 import Data.Matrix
 import Mesh
+import SceneGraph 
 
 setClearColor :: Color4 Float -> IO ()
 setClearColor color = do
@@ -44,8 +45,8 @@ renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . rende
 render :: RenderPipelineState -> IO ()
 render state = do
   let meshObj = mesh state
-  _ <- setMVPMatrix meshObj
-  P.useProgram (program state )
+  P.setMVPMatrix (mvpMatrix . renderable $ meshObj)
+  P.useProgram (program state)
   withVertexArrayObject (vao meshObj) $ do
     let (RenderHint mode startIndex numVertices) = renderHint meshObj
     drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
