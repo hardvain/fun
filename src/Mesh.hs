@@ -14,16 +14,6 @@ data Mesh = Mesh {
   renderable :: Renderable
 }
 
-
-data RenderHint = RenderHint {
-  mode :: GL.PrimitiveMode,
-  startIndex :: Int,
-  numVertices :: Int
-}
-
-renderHint :: Mesh -> RenderHint
-renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . renderable $ mesh)
-
 createMesh :: Renderable -> IO Mesh
 createMesh renderable@(Renderable (Drawable positions colorsData _) _ _ ) =
   withNewVertexArrayObject $ \vao -> do
