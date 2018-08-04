@@ -5,7 +5,7 @@ import Graphics.Rendering.OpenGL as GL
 import Graphics.UI.GLFW as GLFW
 import Control.Monad
 import Buffer 
-import Program
+import qualified Program as P
 import Shape 
 import Data.Ratio
 import Ease 
@@ -14,7 +14,6 @@ import AST
 import Matrix as M
 import qualified Data.Time.Clock.POSIX as Time
 import System.IO.Unsafe
-import Program 
 import Data.Matrix
 
 
@@ -31,11 +30,11 @@ populateMeshes :: SceneGraph Renderable -> SceneGraph Mesh
 populateMeshes (SceneGraph tree) =  SceneGraph $ fmap (unsafePerformIO . createMesh) tree
 
     
-setUniform :: Renderable ->  IO ()
-setUniform renderableObj = do
+setUniform1 :: Renderable ->  IO ()
+setUniform1 renderableObj = do
   let matrix = mvpMatrix renderableObj
-  prog <- defaultProgram
-  transformLocation <- GL.uniformLocation (glProgram prog) "transform"
+  prog <- P.defaultProgram
+  transformLocation <- GL.uniformLocation (P.glProgram prog) "transform"
   datum <- GL.newMatrix GL.ColumnMajor (toList matrix) :: IO (GL.GLmatrix GL.GLfloat)
   GL.uniform transformLocation GL.$= datum
   
@@ -45,6 +44,9 @@ setClearColor color = do
   GL.clear [ColorBuffer]
   return ()
 
+setMVPMatrix :: Mesh -> IO ()
+setMVPMatrix mesh = P.setMVPMatrix (mvpMatrix . renderable $ mesh)
+  
 draw ::  SceneGraph Renderable -> Window ->  Int -> Integer -> IO ()
 draw sceneGraph  = drawLoop (populateMeshes sceneGraph)
 
@@ -62,8 +64,8 @@ renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . rende
     
 render :: Mesh -> IO ()
 render mesh = do
+  _ <- setMVPMatrix mesh
   let renderableObj = renderable mesh
-  setUniform renderableObj
   withVertexArrayObject (vao mesh) $ do
     let (RenderHint mode startIndex numVertices) = renderHint mesh
     drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
