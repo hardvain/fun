@@ -27,12 +27,12 @@ setMVPMatrix :: Mesh -> IO ()
 setMVPMatrix mesh = P.setMVPMatrix (mvpMatrix . renderable $ mesh)
   
 draw :: SceneGraph Renderable -> Window ->  Int -> Integer -> IO ()
-draw sceneGraph  = drawLoop (populateMeshes sceneGraph)
+draw sceneGraph  = drawLoop (fmap (unsafePerformIO . initializePipelineState) sceneGraph)
 
 drawLoop ::  SceneGraph RenderPipelineState -> Window -> Int -> Integer -> IO ()
 drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
   setClearColor $ Color4 0 0 0 1
-  renderTree tree
+  apply render tree
   GLFW.swapBuffers window
   forever $ do
     GLFW.pollEvents
@@ -49,9 +49,3 @@ render state = do
   withVertexArrayObject (vao meshObj) $ do
     let (RenderHint mode startIndex numVertices) = renderHint meshObj
     drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
-
-renderTree :: Tree RenderPipelineState -> IO ()
-renderTree Empty = return ()
-renderTree (Node state trees) = do
-  render state
-  mapM_ (renderTree) trees
