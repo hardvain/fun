@@ -57,21 +57,22 @@ drawLoop sceneGraph window frameNumber startTime = do
     GLFW.pollEvents
     drawLoop sceneGraph window (frameNumber + 1) startTime
 
+renderHint :: Mesh -> RenderHint
+renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . renderable $ mesh)
+    
 render :: Mesh -> IO ()
 render mesh = do
   let renderableObj = renderable mesh
   setUniform renderableObj
-  let renderHint = RenderHint GL.Triangles 0 (numberOfVertices . drawable $ renderableObj)
-  renderMesh renderHint mesh
+  withVertexArrayObject (vao mesh) $ do
+    let (RenderHint mode startIndex numVertices) = renderHint mesh
+    drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
 
-renderMesh :: RenderHint -> Mesh -> IO ()
-renderMesh (RenderHint mode startIndex numVertices) mesh = withVertexArrayObject (vao mesh) $ do
-  drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
 
 renderSceneGraph :: SceneGraph  Mesh -> IO ()
 renderSceneGraph (SceneGraph tree) = renderTree tree
 
-renderTree :: Tree  Mesh -> IO ()
+renderTree :: Tree Mesh -> IO ()
 renderTree Empty = return ()
 renderTree (Node mesh trees) = do
   render mesh
