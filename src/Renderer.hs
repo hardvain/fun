@@ -57,8 +57,8 @@ drawLoop sceneGraph window frameNumber startTime = do
     GLFW.pollEvents
     drawLoop sceneGraph window (frameNumber + 1) startTime
 
-render ::  Mesh -> IO ()
-render  mesh = do
+render :: Mesh -> IO ()
+render mesh = do
   let renderableObj = renderable mesh
   setUniform renderableObj
   let renderHint = RenderHint GL.Triangles 0 (numberOfVertices . drawable $ renderableObj)
