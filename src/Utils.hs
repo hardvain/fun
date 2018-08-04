@@ -11,11 +11,11 @@ toRadians x = x*pi/180
 fromRadians :: Float -> Float
 fromRadians x = x/pi*180
 
-rotate2D' :: Float -> [(Float, Float)] -> [(Float, Float)]
-rotate2D' a = map (rotate2D a)
+rotate3D' :: Float -> [(Float, Float, Float)] -> [(Float, Float, Float)]
+rotate3D' a = map (rotate3D a)
 
-rotate2D :: Float -> (Float, Float) -> (Float, Float)
-rotate2D theta (x,y) = (x',y')
+rotate3D :: Float -> (Float, Float, Float) -> (Float, Float, Float)
+rotate3D theta (x,y,z) = (x',y',0)
   where
     x' = x * cos theta - y * sin theta
     y' = x * sin theta + y * cos theta
@@ -35,19 +35,20 @@ mulMatrVect :: Matrix2D -> (Float, Float) -> (Float, Float)
 mulMatrVect (x1,x2,y1,y2) (x,y) = ((x1+x2)*x,(y1+y2)*y)
 
 
-addVectors :: (Float, Float) -> (Float, Float) -> (Float, Float)
-addVectors (x1,y1) (x2,y2) = (x1+x2, y1+y2)
+addVectors :: (Float, Float, Float) -> (Float, Float, Float) -> (Float, Float, Float)
+addVectors (x1,y1,z1) (x2,y2,z2) = (x1+x2, y1+y2, z1+z1)
 
 
 -- | Group list into indevidual pairs: [1,2,3,4] => [(1,2),(3,4)]. 
 --   Works only with even number of elements
-pairs :: [t] -> [(t, t)]
-pairs [] = []
-pairs [x] = error "Non-even list for pair function"
-pairs (x:y:xs) = (x,y):pairs xs
+triples :: [t] -> [(t, t, t)]
+triples [] = []
+triples [x] = error "Non-triple list for pair function with one value"
+triples [x,y] = error "Non-triple list for pair function with two values"
+triples (x:y:z:xs) = (x,y, z):triples xs
 
 -- | Undo pairs function
-fromPairs :: [(a, a)] -> [a]
-fromPairs [] = []
-fromPairs ((x,y):xs) = x:y:fromPairs xs
+fromTriples :: [(a, a, a)] -> [a]
+fromTriples [] = []
+fromTriples ((x,y, z):xs) = x:y:z:fromTriples xs
 

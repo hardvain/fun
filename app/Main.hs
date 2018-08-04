@@ -22,9 +22,9 @@ main :: IO ()
 main = do
   window <- createWindow 1920 1280 "Fun"
   startTime <- timeInMillis
-  let square = toDrawable red500 (Square (-0.5, -0.5) 1.0)
-  let circle = toDrawable blue500 (Circle (0.5, 0.5) 0.5 100)
-  let polyLine =  toDrawable White (Polyline [ (0.0,-0.66) ,(0.33,-0.33) ,(0.66,-0.66) ,(1.0,-0.33)] 0.01)
+  let square = toDrawable red500 (Square (-0.5, -0.5,0) 1.0)
+  let circle = toDrawable blue500 (Circle (0.5, 0.5,0) 0.5 100)
+  let polyLine =  toDrawable White (Polyline [ (0.0,-0.66,0) ,(0.33,-0.33,0) ,(0.66,-0.66,0) ,(1.0,-0.33,0)] 0.01)
   let squareRenderable = makeDefaultRenderable square 
   let circleRenderable = makeDefaultRenderable circle 
   let renderables = [ makeNode circleRenderable

@@ -7,7 +7,7 @@ import Color
 
 
 type Points    =  [Point]
-type Point     =  (Float, Float)
+type Point     =  (Float, Float, Float)
 type Radius    =  Float
 type Side      =  Float
 type Divisions =  Int
@@ -21,6 +21,7 @@ data Shape = Circle   Point   Radius Divisions
           | Polygon  [Point]    -- | [Triangle] ? 
           | Polyline [Point]  Float
           | Curve    [Point]
+          | Cube    Float
           deriving Show
 
 
@@ -30,11 +31,11 @@ toDrawable clr x = Drawable vertices colors (length vertices)
     where
       vertices  = map vertex $ shape x
       color     = getColor clr
-      colors    = map (\x -> color) $ vertices
+      colors    = map (const color) $ vertices
 
 
 vertex :: Point -> Vertex4 Float
-vertex p = (\(k,l) -> Vertex4 k l 0 1) p
+vertex p = (\(k,l,m) -> Vertex4 k l m 1) p
 
 
 shape :: Shape -> [Point]
@@ -44,10 +45,14 @@ shape (Rect     bl  tr)       =  rect   bl  tr        -- | bl := bottom left, tr
 shape (Line     p1  p2  w)    =  line   p1  p2  w
 shape (Polyline ps  w)        =  polyline ps w
 shape (Triangle p1  p2 p3)    =  triangle p1 p2 p3
+shape (Cube side)    =  cube side
 
+
+cube :: Float -> [Point]
+cube side = []
 
 polyline :: [Point] -> Float -> [Point]
-polyline ps w = concatMap (\(x,y) -> line x y w) $ pairs $ abbcca ps
+polyline ps w = concatMap (\(x,y,z) -> line x y w) $ triples (abbcca ps)
 
 
 triangle :: Point -> Point -> Point -> [Point]
@@ -55,44 +60,40 @@ triangle p1 p2 p3 = [p1, p2, p3]
 
 
 square :: Point -> Float -> [Point]
-square pos side = [p1, p2, p3,
+square (x,y,z) side = [p1, p2, p3,
                     p1, p3, p4]
     where          
-        x = fst pos
-        y = snd pos
         r = side/2 
-        p1 = (x + r, y + r)
-        p2 = (x - r, y + r)
-        p3 = (x - r, y - r)
-        p4 = (x + r, y - r)
+        p1 = (x + r, y + r, z)
+        p2 = (x - r, y + r, z)
+        p3 = (x - r, y - r, z)
+        p4 = (x + r, y - r, z)
         
 
 abbcca :: [a] -> [a]
 abbcca (x:xs) = [x] ++ (concat $ map (\(x,y) -> [x,y]) $ map (\x -> (x, x)) (init xs)) ++ [last xs]
-
+        
 
 circle :: Point -> Float -> Int -> [Point]
-circle pos r divs =
+circle pos@(x,y,z) r divs =
     let
-        x = fst pos
-        y = snd pos
         divs'    = fromIntegral divs
         sines   = map ((y +).(r *).sin) [0.0, 2*pi/divs' .. 2*pi]
         cosines = map ((x +).(r *).cos) [0.0, 2*pi/divs' .. 2*pi]       
     in
-        concat $ insertpos $ abbcca $ zip sines cosines
+        concat $ insertpos $ abbcca $ zip3 sines cosines (cycle [0])
             where
                   insertpos (x:y:[]) = [[pos,x,y]]
                   insertpos (x:y:xs) = [pos,x,y] : insertpos xs
 
 
 rect :: Point -> Point -> [Point]
-rect (x1,y1) (x2,y2) = [(x2,y2),(x1,y2),(x1,y1),
-                        (x2,y2),(x1,y1),(x2,y1)]
+rect (x1,y1,_) (x2,y2,_) = [(x2,y2,0),(x1,y2,0),(x1,y1,0),
+                        (x2,y2,0),(x1,y1,0),(x2,y1,0)]
 
 
 line :: Point -> Point -> Float -> [Point]
-line (x1,y1) (x2,y2) w = map (addVectors (x1,y1)) $ rotate2D' theta $ rect (0.0,-w/2) (len,w/2) -- rotation is wrong
+line (x1,y1,_) (x2,y2,_) w = map (addVectors (x1,y1,0)) $ rotate3D' theta $ rect (0.0,-w/2,0) (len,w/2,0) -- rotation is wrong
       where 
             (x,y) = normalize $ ((x2-x1),(y2-y1))
             theta = signum y * acos x                               -- | angle in radians
