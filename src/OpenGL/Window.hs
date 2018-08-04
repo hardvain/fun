@@ -1,7 +1,4 @@
-module OpenGL.Window (
-  createWindow, 
-  closeWindow
-) where
+module OpenGL.Window where
 
 import qualified Graphics.UI.GLFW as GLFW
 import System.Exit ( exitWith, ExitCode(..) )

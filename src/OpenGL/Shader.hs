@@ -1,6 +1,4 @@
-module OpenGL.Shader (
-   ShaderSource(..), ShaderInfo(..), loadShaders
-) where
+module OpenGL.Shader where
 
 import Control.Exception
 import Control.Monad

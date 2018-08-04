@@ -1,7 +1,9 @@
 module OpenGL.Program  where
+
 import qualified Graphics.Rendering.OpenGL as GL
 import OpenGL.Shader
 import Data.Matrix
+
 data Program = Program {
   vertexShader :: ShaderInfo,
   fragmentShader :: ShaderInfo,

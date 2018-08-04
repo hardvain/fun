@@ -1,9 +1,16 @@
 module Shape where
-import AST
+  
 import Graphics.Rendering.OpenGL (Vertex4(..), Color4(..), GLclampf(..))
 import Utils 
 import Renderable
 import Color 
+
+
+type Points    =  [Point]
+type Point     =  (Float, Float)
+type Radius    =  Float
+type Side      =  Float
+type Divisions =  Int
 
 data Shape = Circle   Point   Radius Divisions
           | Square    Point   Side
@@ -100,4 +107,4 @@ getColor x
     | x == Blue  = Color4 0 0 1 1
     | x == White = Color4 1 1 1 1
     | otherwise  = Color4 0 0 0 1
-  
+      

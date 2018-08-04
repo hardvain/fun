@@ -1,7 +1,7 @@
 module Mesh where
 
 import qualified Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
-import AST
+
 import OpenGL.Buffer 
 import System.IO.Unsafe
 import qualified OpenGL.Program as P

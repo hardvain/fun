@@ -2,19 +2,11 @@
 module Renderer where
 
 import Graphics.Rendering.OpenGL as GL
+import qualified OpenGL.Program as P
 import Graphics.UI.GLFW as GLFW
 import Control.Monad
 import OpenGL.Buffer 
-import qualified OpenGL.Program as P
-import Shape 
-import Data.Ratio
-import Ease 
-import Time
-import AST
-import Matrix as M
-import qualified Data.Time.Clock.POSIX as Time
 import System.IO.Unsafe
-import Data.Matrix
 import Mesh
 import SceneGraph 
 import Renderable

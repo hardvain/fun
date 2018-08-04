@@ -1,6 +1,6 @@
 module Utils where
-type Matrix2D = (Float, Float, Float, Float)
 
+type Matrix2D = (Float, Float, Float, Float)
 
 -- | converts degrees to radians
 toRadians :: Float -> Float
