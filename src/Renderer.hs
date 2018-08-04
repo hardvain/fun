@@ -15,28 +15,8 @@ import Matrix as M
 import qualified Data.Time.Clock.POSIX as Time
 import System.IO.Unsafe
 import Data.Matrix
+import Mesh
 
-
-
-createMesh :: Renderable -> IO Mesh
-createMesh renderable@(Renderable (Drawable positions colorsData _) _ _ ) =
-  withNewVertexArrayObject $ \vao -> do
-    positionBufferObject <- createAndDescribeBuffer positions 0 4
-    colorBufferObject <- createAndDescribeBuffer colorsData 1 4
-    return $ Mesh positionBufferObject colorBufferObject vao renderable
-
-
-populateMeshes :: SceneGraph Renderable -> SceneGraph Mesh
-populateMeshes (SceneGraph tree) =  SceneGraph $ fmap (unsafePerformIO . createMesh) tree
-
-    
-setUniform1 :: Renderable ->  IO ()
-setUniform1 renderableObj = do
-  let matrix = mvpMatrix renderableObj
-  prog <- P.defaultProgram
-  transformLocation <- GL.uniformLocation (P.glProgram prog) "transform"
-  datum <- GL.newMatrix GL.ColumnMajor (toList matrix) :: IO (GL.GLmatrix GL.GLfloat)
-  GL.uniform transformLocation GL.$= datum
   
 setClearColor :: Color4 Float -> IO ()
 setClearColor color = do
@@ -47,7 +27,7 @@ setClearColor color = do
 setMVPMatrix :: Mesh -> IO ()
 setMVPMatrix mesh = P.setMVPMatrix (mvpMatrix . renderable $ mesh)
   
-draw ::  SceneGraph Renderable -> Window ->  Int -> Integer -> IO ()
+draw :: SceneGraph Renderable -> Window ->  Int -> Integer -> IO ()
 draw sceneGraph  = drawLoop (populateMeshes sceneGraph)
 
 drawLoop ::  SceneGraph Mesh -> Window -> Int -> Integer -> IO ()

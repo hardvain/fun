@@ -21,18 +21,6 @@ data Renderable = Renderable {
 
 data UniformData  a = UniformData String a GL.UniformLocation
 
-data Mesh = Mesh {
-  positionBufferObject :: GL.BufferObject,
-  colorBufferObject :: GL.BufferObject,
-  vao :: GL.VertexArrayObject,
-  renderable :: Renderable
-}
-
-data RenderHint = RenderHint {
-  primitiveMode :: GL.PrimitiveMode,
-  startIndex :: Int,
-  numVertices :: Int
-}
 data DrawingState = DrawingState {
   programType :: ProgramType
 }
