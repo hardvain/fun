@@ -6,6 +6,7 @@ import Renderable
 import Drawable
 import Buffer
 import System.IO.Unsafe
+
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,
   colorBufferObject :: GL.BufferObject,

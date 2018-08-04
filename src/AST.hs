@@ -21,6 +21,7 @@ data RenderHint = RenderHint {
   startIndex :: Int,
   numVertices :: Int
 }
+
 data DrawingState = DrawingState {
   programType :: ProgramType
 }
