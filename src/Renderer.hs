@@ -16,10 +16,21 @@ import qualified Data.Time.Clock.POSIX as Time
 import System.IO.Unsafe
 import Program 
 import Data.Matrix
-import Mesh
-import Drawable
-import Renderable
-import SceneGraph
+
+
+
+createMesh :: Renderable -> IO Mesh
+createMesh renderable@(Renderable (Drawable positions colorsData _) _ _ ) =
+  withNewVertexArrayObject $ \vao -> do
+    positionBufferObject <- createAndDescribeBuffer positions 0 4
+    colorBufferObject <- createAndDescribeBuffer colorsData 1 4
+    return $ Mesh positionBufferObject colorBufferObject vao renderable
+
+
+populateMeshes :: SceneGraph Renderable -> SceneGraph Mesh
+populateMeshes (SceneGraph tree) =  SceneGraph $ fmap (unsafePerformIO . createMesh) tree
+
+    
 setUniform :: Renderable ->  IO ()
 setUniform renderableObj = do
   let matrix = mvpMatrix renderableObj

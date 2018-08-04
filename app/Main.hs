@@ -18,9 +18,7 @@ import Ease
 import Time
 import AST
 import Data.Matrix
-import Renderable
-import Drawable
-import SceneGraph
+
 
 position :: Position
 position = Position 0 0 0

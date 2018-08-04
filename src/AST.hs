@@ -3,18 +3,30 @@ module AST where
 import Data.Matrix
 import Ease
 import Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
-import Mesh
-import Drawable
-import Renderable
+
 
 type Points    =  [Point]
 type Point     =  (Float, Float)
 type Radius    =  Float
 type Side      =  Float
 type Divisions =  Int
+type MVPMatrix = Matrix Float
 data ProgramType = DefaultProg
 
+data Renderable = Renderable {
+  drawable:: Drawable,
+  transformation :: Transformation,
+  mvpMatrix ::  MVPMatrix
+}
+
 data UniformData  a = UniformData String a GL.UniformLocation
+
+data Mesh = Mesh {
+  positionBufferObject :: GL.BufferObject,
+  colorBufferObject :: GL.BufferObject,
+  vao :: GL.VertexArrayObject,
+  renderable :: Renderable
+}
 
 data RenderHint = RenderHint {
   primitiveMode :: GL.PrimitiveMode,
@@ -24,7 +36,15 @@ data RenderHint = RenderHint {
 data DrawingState = DrawingState {
   programType :: ProgramType
 }
+data Drawable = Drawable {
+  vertices :: [Vertex4 Float],
+  colors :: [Color4 Float],
+  numberOfVertices :: Int
+}
 
+data Position = Position Float Float Float
+data Rotation = Rotation Float Float Float
+data Scale = Scale Float Float Float
 
 type FrameNumber = Int
 type MillisElapsed = Int
@@ -33,6 +53,15 @@ type Animation a = (FrameNumber, MillisElapsed) -> a
 
 data EasingFunction = BounceOut | BounceIn | BounceInOut
 
+data Transformation = Transformation Position Rotation Scale
+
+data Tree a = Empty | Node a [Tree a]
+
+instance Functor Tree where
+  fmap f Empty = Empty
+  fmap f (Node a xs) = Node (f a) (fmap (fmap f) xs)
+
+data SceneGraph a = SceneGraph (Tree a)
 
 data EasingState = EasingState {
   easingFunction :: EasingFunction,
