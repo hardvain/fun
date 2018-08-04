@@ -5,6 +5,7 @@ import AST
 import OpenGL.Buffer 
 import System.IO.Unsafe
 import qualified OpenGL.Program as P
+import Renderable
 
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,

@@ -18,33 +18,7 @@ import Time
 import AST
 import Data.Matrix
 import SceneGraph
-
-position :: Position
-position = Position 0 0 0
-
-rotation :: Rotation
-rotation = Rotation 0 0 0
-
-scale :: Scale
-scale = Scale 0 0 0
-
-transformation :: Transformation
-transformation = Transformation position rotation scale
-
-defaultPosition :: Position
-defaultPosition = Position 0 0 0
-
-defaultRotation :: Rotation
-defaultRotation = Rotation 0 0 0
-
-defaultScale :: Scale
-defaultScale = Scale 1 1 1
-
-defaultTransformation :: Transformation
-defaultTransformation = Transformation defaultPosition defaultRotation defaultScale
-
-makeDefaultRenderable :: Drawable -> Renderable
-makeDefaultRenderable drawable = Renderable drawable defaultTransformation defaultMatrix
+import Renderable
 
 makeSceneGraph :: a -> SceneGraph a
 makeSceneGraph a = SceneGraph (makeNode a)

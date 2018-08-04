@@ -2,7 +2,7 @@ module Shape where
 import AST
 import Graphics.Rendering.OpenGL (Vertex4(..), Color4(..), GLclampf(..))
 import Utils 
-
+import Renderable
 
 data Shape = Circle   Point   Radius Divisions
           | Square    Point   Side

@@ -17,6 +17,7 @@ import System.IO.Unsafe
 import Data.Matrix
 import Mesh
 import SceneGraph 
+import Renderable
 
 setClearColor :: Color4 Float -> IO ()
 setClearColor color = do
