@@ -17,7 +17,7 @@ data ProgramType = DefaultProg
 data UniformData  a = UniformData String a GL.UniformLocation
 
 data RenderHint = RenderHint {
-  primitiveMode :: GL.PrimitiveMode,
+  mode :: GL.PrimitiveMode,
   startIndex :: Int,
   numVertices :: Int
 }
