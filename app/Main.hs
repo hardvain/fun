@@ -25,7 +25,7 @@ main :: IO ()
 main = do
   window <- createWindow 1920 1280 "Fun"
   startTime <- timeInMillis
-  let square = toDrawable (hex 0x673ab7) (Square (-0.5, -0.5) 1.0)
+  let square = toDrawable red500 (Square (-0.5, -0.5) 1.0)
   let circle = toDrawable (hex 0x673ab7) (Circle (0.5, 0.5) 0.5 100)
   let polyLine =  toDrawable White (Polyline [ (0.0,-0.66) ,(0.33,-0.33) ,(0.66,-0.66) ,(1.0,-0.33)] 0.01)
   let squareRenderable = makeDefaultRenderable square 
