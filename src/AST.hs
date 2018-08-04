@@ -19,11 +19,6 @@ data Renderable = Renderable {
   mvpMatrix ::  MVPMatrix
 }
 
-data UniformData  a = UniformData String a GL.UniformLocation
-
-data DrawingState = DrawingState {
-  programType :: ProgramType
-}
 data Drawable = Drawable {
   vertices :: [Vertex4 Float],
   colors :: [Color4 Float],

@@ -1,4 +1,4 @@
-module Window (
+module OpenGL.Window (
   createWindow, 
   closeWindow
 ) where

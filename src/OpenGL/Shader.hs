@@ -1,4 +1,4 @@
-module Shader (
+module OpenGL.Shader (
    ShaderSource(..), ShaderInfo(..), loadShaders
 ) where
 

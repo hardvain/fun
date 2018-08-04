@@ -3,14 +3,13 @@ import qualified Graphics.Rendering.OpenGL as GL
 import qualified Graphics.UI.GLFW as GLFW
 import Control.Monad
 import System.Exit ( exitWith, ExitCode(..) )
-import Shader
+import OpenGL.Shader
 import Foreign.Marshal.Array
 import Foreign.Ptr
-import Window
+import OpenGL.Window
 import Foreign.Storable
-import Window
-import Buffer 
-import Program
+import OpenGL.Buffer 
+import OpenGL.Program
 import Renderer
 import Shape
 import Matrix 

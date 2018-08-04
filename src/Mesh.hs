@@ -2,9 +2,9 @@ module Mesh where
 
 import qualified Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
 import AST
-import Buffer 
+import OpenGL.Buffer 
 import System.IO.Unsafe
-import qualified Program as P
+import qualified OpenGL.Program as P
 
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,

@@ -4,8 +4,8 @@ module Renderer where
 import Graphics.Rendering.OpenGL as GL
 import Graphics.UI.GLFW as GLFW
 import Control.Monad
-import Buffer 
-import qualified Program as P
+import OpenGL.Buffer 
+import qualified OpenGL.Program as P
 import Shape 
 import Data.Ratio
 import Ease 

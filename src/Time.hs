@@ -3,7 +3,6 @@ module Time where
 import qualified Data.Time.Clock.POSIX as Time
 import Data.Ratio
 
-
 timeInMicros :: IO Integer
 timeInMicros = numerator . toRational . (* 1000000) <$> Time.getPOSIXTime
 

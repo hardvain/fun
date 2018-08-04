@@ -1,9 +1,9 @@
-module Buffer where
+module OpenGL.Buffer where
 
 import Graphics.Rendering.OpenGL as GL
 import Foreign.Marshal.Array
 import Foreign.Storable
-import Window
+import OpenGL.Window
 import Foreign.Ptr
 
 data VertexAttributeDescriptor = VertexAttributeDescriptor {
