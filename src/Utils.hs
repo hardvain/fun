@@ -1,7 +1,5 @@
 module Utils where
 
-type Matrix2D = (Float, Float, Float, Float)
-
 -- | converts degrees to radians
 toRadians :: Float -> Float
 toRadians x = x*pi/180
@@ -28,11 +26,6 @@ normalize v@(x,y) = (x*len', y*len')
 
 len :: (Float, Float) -> Float
 len (x,y) = sqrt(x*x+y*y)
-
-
--- | multiply matrix by vector
-mulMatrVect :: Matrix2D -> (Float, Float) -> (Float, Float)
-mulMatrVect (x1,x2,y1,y2) (x,y) = ((x1+x2)*x,(y1+y2)*y)
 
 
 addVectors :: (Float, Float, Float) -> (Float, Float, Float) -> (Float, Float, Float)

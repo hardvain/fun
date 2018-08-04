@@ -45,11 +45,7 @@ shape (Rect     bl  tr)       =  rect   bl  tr        -- | bl := bottom left, tr
 shape (Line     p1  p2  w)    =  line   p1  p2  w
 shape (Polyline ps  w)        =  polyline ps w
 shape (Triangle p1  p2 p3)    =  triangle p1 p2 p3
-shape (Cube side)    =  cube side
 
-
-cube :: Float -> [Point]
-cube side = []
 
 polyline :: [Point] -> Float -> [Point]
 polyline ps w = concatMap (\(x,y,z) -> line x y w) $ triples (abbcca ps)
