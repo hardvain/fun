@@ -16,12 +16,6 @@ data ProgramType = DefaultProg
 
 data UniformData  a = UniformData String a GL.UniformLocation
 
-data RenderHint = RenderHint {
-  mode :: GL.PrimitiveMode,
-  startIndex :: Int,
-  numVertices :: Int
-}
-
 data DrawingState = DrawingState {
   programType :: ProgramType
 }

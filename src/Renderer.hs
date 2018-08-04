@@ -35,9 +35,6 @@ drawLoop sceneGraph window frameNumber startTime = do
 setMVPMatrix :: Mesh -> IO ()
 setMVPMatrix mesh = P.setMVPMatrix (mvpMatrix . renderable $ mesh)
 
-renderHint :: Mesh -> RenderHint
-renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . renderable $ mesh)
-
 render :: Mesh -> IO ()
 render mesh = withVertexArrayObject (vao mesh) $ do
   let (RenderHint mode startIndex numVertices) = renderHint mesh
