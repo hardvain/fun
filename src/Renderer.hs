@@ -29,7 +29,7 @@ setMVPMatrix mesh = P.setMVPMatrix (mvpMatrix . renderable $ mesh)
 draw :: SceneGraph Renderable -> Window ->  Int -> Integer -> IO ()
 draw sceneGraph  = drawLoop (populateMeshes sceneGraph)
 
-drawLoop ::  SceneGraph Mesh -> Window -> Int -> Integer -> IO ()
+drawLoop ::  SceneGraph RenderPipelineState -> Window -> Int -> Integer -> IO ()
 drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
   setClearColor $ Color4 0 0 0 1
   renderTree tree
@@ -41,16 +41,17 @@ drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
 renderHint :: Mesh -> RenderHint
 renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . renderable $ mesh)
     
-render :: Mesh -> IO ()
-render mesh = do
-  _ <- setMVPMatrix mesh
-  P.useProgram (meshProgram mesh)
-  withVertexArrayObject (vao mesh) $ do
-    let (RenderHint mode startIndex numVertices) = renderHint mesh
+render :: RenderPipelineState -> IO ()
+render state = do
+  let meshObj = mesh state
+  _ <- setMVPMatrix meshObj
+  P.useProgram (program state )
+  withVertexArrayObject (vao meshObj) $ do
+    let (RenderHint mode startIndex numVertices) = renderHint meshObj
     drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
 
-renderTree :: Tree Mesh -> IO ()
+renderTree :: Tree RenderPipelineState -> IO ()
 renderTree Empty = return ()
-renderTree (Node mesh trees) = do
-  render mesh
+renderTree (Node state trees) = do
+  render state
   mapM_ (renderTree) trees

@@ -10,8 +10,12 @@ data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,
   colorBufferObject :: GL.BufferObject,
   vao :: GL.VertexArrayObject,
-  renderable :: Renderable,
-  meshProgram :: P.Program
+  renderable :: Renderable
+}
+
+data RenderPipelineState = RenderPipelineState {
+  mesh :: Mesh,
+  program :: P.Program
 }
 
 data RenderHint = RenderHint {
@@ -20,13 +24,14 @@ data RenderHint = RenderHint {
   numVertices :: Int
 }
 
-createMesh :: Renderable -> IO Mesh
+createMesh :: Renderable -> IO RenderPipelineState
 createMesh renderable@(Renderable (Drawable positions colorsData _) _ _ ) =
   withNewVertexArrayObject $ \vao -> do
     prog <- P.defaultProgram
     positionBufferObject <- createAndDescribeBuffer positions 0 4
     colorBufferObject <- createAndDescribeBuffer colorsData 1 4
-    return $ Mesh positionBufferObject colorBufferObject vao renderable prog
+    let mesh = Mesh positionBufferObject colorBufferObject vao renderable
+    return $ RenderPipelineState mesh prog
 
-populateMeshes :: SceneGraph Renderable -> SceneGraph Mesh
+populateMeshes :: SceneGraph Renderable -> SceneGraph RenderPipelineState
 populateMeshes (SceneGraph tree) =  SceneGraph $ fmap (unsafePerformIO . createMesh) tree
