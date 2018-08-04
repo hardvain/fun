@@ -33,3 +33,4 @@ setMVPMatrix :: Matrix Float -> IO ()
 setMVPMatrix matrix = do
   datum <- GL.newMatrix GL.ColumnMajor (toList matrix) :: IO (GL.GLmatrix GL.GLfloat)
   setUniform "transform" datum
+

@@ -47,7 +47,6 @@ defaultTransformation = Transformation defaultPosition defaultRotation defaultSc
 main :: IO ()
 main = do
   window <- createWindow 1920 1280 "Fun"
-  defaultProgram >>= useProgram
   startTime <- timeInMillis
   let square = toDrawable (RGBA 0 0.5 0.5 0.8) (Square (-0.5, -0.5) 1.0)
   let circle = toDrawable (RGBA 0 0.5 0.5 0.6) (Circle (0.5, 0.5) 0.5 100)

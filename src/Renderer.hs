@@ -17,7 +17,6 @@ import System.IO.Unsafe
 import Data.Matrix
 import Mesh
 
-  
 setClearColor :: Color4 Float -> IO ()
 setClearColor color = do
   GL.clearColor $= color
@@ -31,9 +30,9 @@ draw :: SceneGraph Renderable -> Window ->  Int -> Integer -> IO ()
 draw sceneGraph  = drawLoop (populateMeshes sceneGraph)
 
 drawLoop ::  SceneGraph Mesh -> Window -> Int -> Integer -> IO ()
-drawLoop sceneGraph window frameNumber startTime = do
+drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
   setClearColor $ Color4 0 0 0 1
-  renderSceneGraph sceneGraph
+  renderTree tree
   GLFW.swapBuffers window
   forever $ do
     GLFW.pollEvents
@@ -45,14 +44,10 @@ renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . rende
 render :: Mesh -> IO ()
 render mesh = do
   _ <- setMVPMatrix mesh
-  let renderableObj = renderable mesh
+  P.useProgram (meshProgram mesh)
   withVertexArrayObject (vao mesh) $ do
     let (RenderHint mode startIndex numVertices) = renderHint mesh
     drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
-
-
-renderSceneGraph :: SceneGraph  Mesh -> IO ()
-renderSceneGraph (SceneGraph tree) = renderTree tree
 
 renderTree :: Tree Mesh -> IO ()
 renderTree Empty = return ()
