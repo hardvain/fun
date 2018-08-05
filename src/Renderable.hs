@@ -65,10 +65,10 @@ defaultTransformation :: Transformation
 defaultTransformation = Transformation defaultPosition defaultRotation defaultScale
 
 makeDefaultRenderable :: Drawable -> Renderable
-makeDefaultRenderable drawable = Renderable drawable defaultTransformation M.defaultMatrix [sampleAnimation PositionX]
+makeDefaultRenderable drawable = Renderable drawable defaultTransformation M.defaultMatrix [sampleAnimation ScaleY]
 
 sampleAnimation :: AnimationTarget -> Animation 
-sampleAnimation target = Animation target (0) (1)  BounceInOut 0 5000
+sampleAnimation target = Animation target (0) (1)  BounceInOut 0 1000
 
 modelMatrix :: Transformation -> Matrix Float -> Matrix Float
 modelMatrix (Transformation (Position x y z) (Rotation a b c) (Scale l m n))currentMatrix = result

@@ -25,7 +25,7 @@ calculateValue animation@(Animation target from to function startTime duration) 
   where 
     elapsedValue = millisElapsed - startTime
     normalisedProgress = (fromIntegral elapsedValue) / (fromIntegral duration)
-    easedValue = linear normalisedProgress
+    easedValue = bounceInOut normalisedProgress
     valueDifference = to - from
     delta = valueDifference * easedValue
 
