@@ -2,7 +2,6 @@ module Geometry where
   
 import Graphics.Rendering.OpenGL (Vertex4(..), Color4(..), GLclampf(..))
 import Utils 
-import Renderable
 import Color 
 
 type Points    =  [Point]
@@ -11,7 +10,7 @@ type Radius    =  Float
 type Side      =  Float
 type Divisions =  Int
 
-data Shape = Circle   Point   Radius Divisions
+data Geometry = Circle   Point   Radius Divisions
           | Square    Point   Side
           | Rect      Point   Point
           | Line      Point   Point  Float  -- | Ordered pair to store directionality
@@ -25,25 +24,17 @@ data Shape = Circle   Point   Radius Divisions
 
 
 
-toDrawable :: Color -> Shape -> Drawable
-toDrawable clr x = Drawable vertices colors (length vertices)
-    where
-      vertices  = map vertex $ shape x
-      color     = getColor clr
-      colors    = map (const color) $ vertices
-
-
 vertex :: Point -> Vertex4 Float
 vertex p = (\(k,l,m) -> Vertex4 k l m 1) p
 
 
-shape :: Shape -> [Point]
-shape (Square   pos side)     =  square pos side
-shape (Circle   pos rad divs) =  circle pos rad divs
-shape (Rect     bl  tr)       =  rect   bl  tr        -- | bl := bottom left, tr := top right
-shape (Line     p1  p2  w)    =  line   p1  p2  w
-shape (Polyline ps  w)        =  polyline ps w
-shape (Triangle p1  p2 p3)    =  triangle p1 p2 p3
+geometry :: Geometry -> [Point]
+geometry (Square   pos side)     =  square pos side
+geometry (Circle   pos rad divs) =  circle pos rad divs
+geometry (Rect     bl  tr)       =  rect   bl  tr        -- | bl := bottom left, tr := top right
+geometry (Line     p1  p2  w)    =  line   p1  p2  w
+geometry (Polyline ps  w)        =  polyline ps w
+geometry (Triangle p1  p2 p3)    =  triangle p1 p2 p3
 
 
 polyline :: [Point] -> Float -> [Point]

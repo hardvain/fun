@@ -8,6 +8,8 @@ import qualified OpenGL.Program as P
 import Renderable as R
 import Data.Matrix 
 import Matrix
+import Drawable
+
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,
   colorBufferObject :: GL.BufferObject,

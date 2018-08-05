@@ -17,6 +17,7 @@ import Time
 import SceneGraph
 import Renderable
 import Color 
+import Drawable 
 
 main :: IO ()
 main = do

@@ -14,6 +14,7 @@ import Animation
 import Ease 
 import Time 
 import qualified Transformation as T
+import Drawable 
 
 setClearColor :: GL.Color4 Float -> IO ()
 setClearColor color = do
