@@ -23,16 +23,15 @@ setClearColor color = do
   return ()
 
 setMVPMatrix :: Mesh -> IO ()
-setMVPMatrix mesh = P.setMVPMatrix (mvpMatrix . renderable $ mesh)
+setMVPMatrix = P.setMVPMatrix . meshModelMatrix
   
-draw :: SceneGraph Renderable -> Window ->  Int -> Integer -> IO ()
+draw :: SceneGraph Renderable -> Window ->  Int -> Int -> IO ()
 draw sceneGraph  = drawLoop (fmap (unsafePerformIO . initializePipelineState) sceneGraph)
 
-drawLoop ::  SceneGraph RenderPipelineState -> Window -> Int -> Integer -> IO ()
+drawLoop ::  SceneGraph RenderPipelineState -> Window -> Int -> Int -> IO ()
 drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
   setClearColor $ GL.Color4 0 0 0 1
-  currentTime <- timeInMillis
-  let millisElpased = fromIntegral (currentTime - startTime)
+  millisElpased <- elapsedTimeFrom startTime
   apply (render frameNumber millisElpased) tree 
   GLFW.swapBuffers window
   forever $ do
@@ -40,13 +39,13 @@ drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
     drawLoop sceneGraph window (frameNumber + 1) startTime
 
 renderHint :: Mesh -> RenderHint
-renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . renderable $ mesh)
+renderHint mesh = RenderHint GL.Triangles 0 (numVerticesToDraw mesh)
     
 render :: FrameNumber -> MillisElapsed -> RenderPipelineState -> IO ()
 render frameNumber millisElpased state = do
   let meshObj = mesh state
-  let anims = (animations . renderable $ meshObj)
-  let transformations = map (processAnimation frameNumber millisElpased) anims
+  let anims = (meshAnimations meshObj)
+  let transformations = fmap (getTransformation frameNumber millisElpased) anims
   let tran = mconcat transformations
   let translatedMatrix = T.modelMatrix tran (M.modelMatrix state)
   P.setMVPMatrix translatedMatrix

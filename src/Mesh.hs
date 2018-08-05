@@ -9,6 +9,7 @@ import Renderable as R
 import Data.Matrix 
 import Matrix
 import Drawable
+import Animation
 
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,
@@ -38,3 +39,11 @@ initializePipelineState renderable@(Renderable (Drawable positions colorsData _)
     let mesh = Mesh positionBufferObject colorBufferObject vao renderable
     return $ RenderPipelineState mesh prog (mvpMatrix renderable)
 
+numVerticesToDraw :: Mesh -> Int
+numVerticesToDraw = numberOfVertices . drawable . renderable
+
+meshAnimations :: Mesh -> [Animation]
+meshAnimations = animations . renderable
+
+meshModelMatrix :: Mesh -> Matrix Float
+meshModelMatrix = mvpMatrix . renderable

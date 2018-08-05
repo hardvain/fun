@@ -36,8 +36,8 @@ calculateValue animation@(Animation target from to function startTime duration) 
 sampleAnimation :: AnimationTarget -> Animation 
 sampleAnimation target = Animation target (0) (6.28)  BounceInOut 0 5000
   
-processAnimation :: FrameNumber -> MillisElapsed -> Animation -> Transformation
-processAnimation frameNumber millisElpased anim = getTransformationForTarget (target anim) $ runAnimation anim  frameNumber millisElpased
+getTransformation :: FrameNumber -> MillisElapsed -> Animation -> Transformation
+getTransformation frameNumber millisElpased anim = getTransformationForTarget (target anim) $ runAnimation anim frameNumber millisElpased
 
 getTransformationForTarget :: AnimationTarget -> (Float -> Transformation)
 getTransformationForTarget PositionX = (\v -> Transformation (Position v 0 0) defaultRotation defaultScale)
