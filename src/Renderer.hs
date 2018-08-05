@@ -9,11 +9,11 @@ import OpenGL.Buffer
 import System.IO.Unsafe
 import Mesh as M
 import SceneGraph 
-import Renderable as R
+import Renderable
 import Animation 
 import Ease 
 import Time 
-import Transformation 
+import qualified Transformation as T
 
 setClearColor :: GL.Color4 Float -> IO ()
 setClearColor color = do
@@ -47,23 +47,10 @@ render frameNumber millisElpased state = do
   let anims = (animations . renderable $ meshObj)
   let transformations = map (processAnimation frameNumber millisElpased) anims
   let tran = mconcat transformations
-  let translatedMatrix = R.modelMatrix tran (M.modelMatrix state)
+  let translatedMatrix = T.modelMatrix tran (M.modelMatrix state)
   P.setMVPMatrix translatedMatrix
   P.useProgram (program state)
   withVertexArrayObject (vao meshObj) $ do
     let (RenderHint mode startIndex numVertices) = renderHint meshObj
     GL.drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
 
-processAnimation :: FrameNumber -> MillisElapsed -> Animation -> Transformation
-processAnimation frameNumber millisElpased anim = getTransformationForTarget (target anim) $ runAnimation anim  frameNumber millisElpased
-
-getTransformationForTarget :: AnimationTarget -> (Float -> Transformation)
-getTransformationForTarget PositionX = (\v -> Transformation (Position v 0 0) defaultRotation defaultScale)
-getTransformationForTarget PositionY = (\v -> Transformation (Position 0 v 0) defaultRotation defaultScale)
-getTransformationForTarget PositionZ = (\v -> Transformation (Position 0 0 v) defaultRotation defaultScale)
-getTransformationForTarget ScaleX = (\v -> Transformation defaultPosition defaultRotation (Scale v 1 1))
-getTransformationForTarget ScaleY = (\v -> Transformation defaultPosition defaultRotation (Scale 1 v 1))
-getTransformationForTarget ScaleZ = (\v -> Transformation defaultPosition defaultRotation (Scale 1 1 v))
-getTransformationForTarget RotationX = (\v -> Transformation defaultPosition (Rotation v 0 0) defaultScale)
-getTransformationForTarget RotationY = (\v -> Transformation defaultPosition (Rotation 0 v 0) defaultScale)
-getTransformationForTarget RotationZ = (\v -> Transformation defaultPosition (Rotation 0 0 v) defaultScale)

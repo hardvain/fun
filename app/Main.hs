@@ -11,7 +11,7 @@ import Foreign.Storable
 import OpenGL.Buffer 
 import OpenGL.Program
 import Renderer
-import Shape
+import Geometry
 import Matrix 
 import Time
 import SceneGraph

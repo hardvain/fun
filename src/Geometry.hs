@@ -1,10 +1,9 @@
-module Shape where
+module Geometry where
   
 import Graphics.Rendering.OpenGL (Vertex4(..), Color4(..), GLclampf(..))
 import Utils 
 import Renderable
 import Color 
-
 
 type Points    =  [Point]
 type Point     =  (Float, Float, Float)
