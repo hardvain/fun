@@ -7,7 +7,7 @@ import Graphics.UI.GLFW as GLFW
 import Control.Monad
 import OpenGL.Buffer 
 import System.IO.Unsafe
-import Mesh
+import Mesh as M
 import SceneGraph 
 import Renderable
 
@@ -38,7 +38,7 @@ renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . rende
 render :: RenderPipelineState -> IO ()
 render state = do
   let meshObj = mesh state
-  P.setMVPMatrix (mvpMatrix . renderable $ meshObj)
+  P.setMVPMatrix (M.modelMatrix state)
   P.useProgram (program state)
   withVertexArrayObject (vao meshObj) $ do
     let (RenderHint mode startIndex numVertices) = renderHint meshObj

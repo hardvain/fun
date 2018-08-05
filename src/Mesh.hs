@@ -5,8 +5,9 @@ import qualified Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
 import OpenGL.Buffer 
 import System.IO.Unsafe
 import qualified OpenGL.Program as P
-import Renderable
-
+import Renderable as R
+import Data.Matrix 
+import Matrix
 data Mesh = Mesh {
   positionBufferObject :: GL.BufferObject,
   colorBufferObject :: GL.BufferObject,
@@ -16,7 +17,8 @@ data Mesh = Mesh {
 
 data RenderPipelineState = RenderPipelineState {
   mesh :: Mesh,
-  program :: P.Program
+  program :: P.Program,
+  modelMatrix :: Matrix Float
 }
 
 data RenderHint = RenderHint {
@@ -32,5 +34,5 @@ initializePipelineState renderable@(Renderable (Drawable positions colorsData _)
     positionBufferObject <- createAndDescribeBuffer positions 0 4
     colorBufferObject <- createAndDescribeBuffer colorsData 1 4
     let mesh = Mesh positionBufferObject colorBufferObject vao renderable
-    return $ RenderPipelineState mesh prog
+    return $ RenderPipelineState mesh prog (R.modelMatrix defaultPosition defaultRotation defaultScale (mvpMatrix renderable))
 

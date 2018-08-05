@@ -1,14 +1,13 @@
 module Renderable where
 
-import Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
-import Matrix
+import qualified Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
+import qualified Matrix as M
 import Data.Matrix
 
-type MVPMatrix = Matrix Float
 
 data Drawable = Drawable {
-  vertices :: [Vertex4 Float],
-  colors :: [Color4 Float],
+  vertices :: [GL.Vertex4 Float],
+  colors :: [GL.Color4 Float],
   numberOfVertices :: Int
 }
 
@@ -23,7 +22,7 @@ data Transformation = Transformation Position Rotation Scale
 data Renderable = Renderable {
   drawable:: Drawable,
   transformation :: Transformation,
-  mvpMatrix ::  MVPMatrix
+  mvpMatrix ::  Matrix Float
 }
 
 
@@ -40,4 +39,11 @@ defaultTransformation :: Transformation
 defaultTransformation = Transformation defaultPosition defaultRotation defaultScale
 
 makeDefaultRenderable :: Drawable -> Renderable
-makeDefaultRenderable drawable = Renderable drawable defaultTransformation defaultMatrix
+makeDefaultRenderable drawable = Renderable drawable defaultTransformation (M.translate 0.2 (-0.4) 0)
+
+modelMatrix :: Position -> Rotation -> Scale -> Matrix Float -> Matrix Float
+modelMatrix (Position x y z) (Rotation a b c) (Scale l m n) currentMatrix = result
+  where
+    translateMatrix = M.translate x y z
+    scaleMatrix = M.scale l m n
+    result = multStd (multStd currentMatrix translateMatrix) scaleMatrix
