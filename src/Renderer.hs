@@ -22,10 +22,19 @@ setClearColor color = do
   GL.clear [GL.ColorBuffer]
   return ()
 
-draw :: SceneGraph Renderable -> Window ->  Int -> Int -> IO ()
+{- | The main draw function that draws the current frame to opengl window -}
+draw :: SceneGraph Renderable -- A scenegraph of renderable objects
+        -> Window  -- The GLFW window which renderes opengl graphics
+        -> Int  -- Current FrameNumber
+        -> Int  -- StartTime of the application
+        -> IO ()
 draw sceneGraph  = drawLoop (fmap (unsafePerformIO . initializePipelineState) sceneGraph)
 
-drawLoop ::  SceneGraph RenderPipelineState -> Window -> Int -> Int -> IO ()
+drawLoop :: SceneGraph RenderPipelineState -- A scenegraph with completeley filled pipeline state
+            -> Window  -- The GLFW window which renderes opengl graphics
+            -> Int  -- Current FrameNumber
+            -> Int  -- StartTime of the application
+            -> IO ()
 drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
   setClearColor $ GL.Color4 0 0 0 1
   millisElpased <- elapsedTimeFrom startTime
