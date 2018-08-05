@@ -24,7 +24,8 @@ main = do
   window <- createWindow 1920 1280 "Fun"
   startTime <- timeInMillis
   let squarePoints = Square (0,0,0) 0.5
-  let square = toDrawable deepPurple600 squarePoints
+  color <- randomMaterialColor
+  let square = toDrawable color squarePoints
   let circle = toDrawable deepOrange400 (Circle (0.5, 0.5,0) 0.5 100)
   let polyLine =  toDrawable White (Polyline [ (0.0,-0.66,0) ,(0.33,-0.33,0) ,(0.66,-0.66,0) ,(1.0,-0.33,0)] 0.01)
   let squareRenderable = makeDefaultRenderable square 
