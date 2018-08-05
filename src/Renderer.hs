@@ -44,16 +44,16 @@ render :: FrameNumber -> MillisElapsed -> RenderPipelineState -> IO ()
 render frameNumber millisElpased state = do
   let meshObj = mesh state
   let anims = (animations . renderable $ meshObj)
-  let tran = processAnimations frameNumber millisElpased anims
+  let transformations = map (processAnimation frameNumber millisElpased) anims
+  let tran = mconcat transformations
   P.setMVPMatrix (R.modelMatrix tran (M.modelMatrix state))
   P.useProgram (program state)
   withVertexArrayObject (vao meshObj) $ do
     let (RenderHint mode startIndex numVertices) = renderHint meshObj
     GL.drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
 
-processAnimations :: FrameNumber -> MillisElapsed -> [Animation] -> Transformation
-processAnimations _ _ [] = defaultTransformation
-processAnimations frameNumber millisElpased [x] = 
+processAnimation :: FrameNumber -> MillisElapsed -> Animation -> Transformation
+processAnimation frameNumber millisElpased x = 
   let value = runAnimation x frameNumber millisElpased
   in
-    Transformation (Position value 0 0 ) defaultRotation defaultScale
+    Transformation (Position value 0 0) defaultRotation defaultScale
