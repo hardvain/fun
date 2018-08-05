@@ -46,7 +46,9 @@ render frameNumber millisElpased state = do
   let anims = (animations . renderable $ meshObj)
   let transformations = map (processAnimation frameNumber millisElpased) anims
   let tran = mconcat transformations
-  P.setMVPMatrix (R.modelMatrix tran (M.modelMatrix state))
+  _ <- putStrLn (show tran)
+  let translatedMatrix = R.modelMatrix tran (M.modelMatrix state)
+  P.setMVPMatrix translatedMatrix
   P.useProgram (program state)
   withVertexArrayObject (vao meshObj) $ do
     let (RenderHint mode startIndex numVertices) = renderHint meshObj
