@@ -60,7 +60,7 @@ module Ease
   , EasingState(..)
   , animate
   , applyEasing
-  , EasingFunction
+  , EasingFunction(..)
   , FrameNumber
   , MillisElapsed
   -- * Re-export

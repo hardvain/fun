@@ -3,7 +3,8 @@ module Renderable where
 import qualified Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
 import qualified Matrix as M
 import Data.Matrix
-
+import Animation
+import Ease
 
 data Drawable = Drawable {
   vertices :: [GL.Vertex4 Float],
@@ -22,7 +23,8 @@ data Transformation = Transformation Position Rotation Scale
 data Renderable = Renderable {
   drawable:: Drawable,
   transformation :: Transformation,
-  mvpMatrix ::  Matrix Float
+  mvpMatrix ::  Matrix Float,
+  animations :: [Animation]
 }
 
 
@@ -39,10 +41,13 @@ defaultTransformation :: Transformation
 defaultTransformation = Transformation defaultPosition defaultRotation defaultScale
 
 makeDefaultRenderable :: Drawable -> Renderable
-makeDefaultRenderable drawable = Renderable drawable defaultTransformation (M.translate 0.2 (-0.4) 0)
+makeDefaultRenderable drawable = Renderable drawable defaultTransformation (M.translate 0.2 (-0.4) 0) [sampleAnimation PositionX]
 
-modelMatrix :: Position -> Rotation -> Scale -> Matrix Float -> Matrix Float
-modelMatrix (Position x y z) (Rotation a b c) (Scale l m n) currentMatrix = result
+sampleAnimation :: AnimationTarget -> Animation 
+sampleAnimation target = Animation target (-1) (1)  BounceInOut 0 5000
+
+modelMatrix :: Transformation -> Matrix Float -> Matrix Float
+modelMatrix (Transformation (Position x y z) (Rotation a b c) (Scale l m n))currentMatrix = result
   where
     translateMatrix = M.translate x y z
     scaleMatrix = M.scale l m n

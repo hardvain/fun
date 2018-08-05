@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Renderer where
 
-import Graphics.Rendering.OpenGL as GL
+import qualified Graphics.Rendering.OpenGL as GL
 import qualified OpenGL.Program as P
 import Graphics.UI.GLFW as GLFW
 import Control.Monad
@@ -9,12 +9,15 @@ import OpenGL.Buffer
 import System.IO.Unsafe
 import Mesh as M
 import SceneGraph 
-import Renderable
+import Renderable as R
+import Animation 
+import Ease 
+import Time 
 
-setClearColor :: Color4 Float -> IO ()
+setClearColor :: GL.Color4 Float -> IO ()
 setClearColor color = do
-  GL.clearColor $= color
-  GL.clear [ColorBuffer]
+  GL.clearColor GL.$= color
+  GL.clear [GL.ColorBuffer]
   return ()
 
 setMVPMatrix :: Mesh -> IO ()
@@ -25,8 +28,10 @@ draw sceneGraph  = drawLoop (fmap (unsafePerformIO . initializePipelineState) sc
 
 drawLoop ::  SceneGraph RenderPipelineState -> Window -> Int -> Integer -> IO ()
 drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
-  setClearColor $ Color4 0 0 0 1
-  apply render tree
+  setClearColor $ GL.Color4 0 0 0 1
+  currentTime <- timeInMillis
+  let millisElpased = fromIntegral (currentTime - startTime)
+  apply (render frameNumber millisElpased) tree 
   GLFW.swapBuffers window
   forever $ do
     GLFW.pollEvents
@@ -35,11 +40,20 @@ drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
 renderHint :: Mesh -> RenderHint
 renderHint mesh = RenderHint GL.Triangles 0 (numberOfVertices . drawable . renderable $ mesh)
     
-render :: RenderPipelineState -> IO ()
-render state = do
+render :: FrameNumber -> MillisElapsed -> RenderPipelineState -> IO ()
+render frameNumber millisElpased state = do
   let meshObj = mesh state
-  P.setMVPMatrix (M.modelMatrix state)
+  let anims = (animations . renderable $ meshObj)
+  let tran = processAnimations frameNumber millisElpased anims
+  P.setMVPMatrix (R.modelMatrix tran (M.modelMatrix state))
   P.useProgram (program state)
   withVertexArrayObject (vao meshObj) $ do
     let (RenderHint mode startIndex numVertices) = renderHint meshObj
-    drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
+    GL.drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
+
+processAnimations :: FrameNumber -> MillisElapsed -> [Animation] -> Transformation
+processAnimations _ _ [] = defaultTransformation
+processAnimations frameNumber millisElpased [x] = 
+  let value = runAnimation x frameNumber millisElpased
+  in
+    Transformation (Position value 0 0 ) defaultRotation defaultScale

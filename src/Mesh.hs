@@ -28,11 +28,11 @@ data RenderHint = RenderHint {
 }
 
 initializePipelineState ::  Renderable -> IO RenderPipelineState
-initializePipelineState renderable@(Renderable (Drawable positions colorsData _) _ _ ) =
+initializePipelineState renderable@(Renderable (Drawable positions colorsData _) _ _ _) =
   withNewVertexArrayObject $ \vao -> do
     prog <- P.defaultProgram
     positionBufferObject <- createAndDescribeBuffer positions 0 4
     colorBufferObject <- createAndDescribeBuffer colorsData 1 4
     let mesh = Mesh positionBufferObject colorBufferObject vao renderable
-    return $ RenderPipelineState mesh prog (R.modelMatrix defaultPosition defaultRotation defaultScale (mvpMatrix renderable))
+    return $ RenderPipelineState mesh prog (mvpMatrix renderable)
 
