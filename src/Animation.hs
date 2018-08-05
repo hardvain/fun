@@ -1,6 +1,6 @@
 module Animation where
 import Ease
-data AnimationTarget = PositionX | PosiitionY | PositionZ
+data AnimationTarget = PositionX | PositionY | PositionZ
                       | RotationX | RotationY | RotationZ
                       | ScaleX | ScaleY | ScaleZ 
 
