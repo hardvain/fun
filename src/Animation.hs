@@ -3,9 +3,7 @@ module Animation where
 import Ease
 import Transformation
 
-data AnimationTarget = PositionX | PositionY | PositionZ
-                      | RotationX | RotationY | RotationZ
-                      | ScaleX | ScaleY | ScaleZ 
+data AnimationTarget = PositionX | PositionY | PositionZ | RotationX | RotationY | RotationZ | ScaleX | ScaleY | ScaleZ 
 
 data Animation = Animation {
   target :: AnimationTarget,
