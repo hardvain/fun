@@ -28,12 +28,3 @@ calculateValue animation@(Animation target from to function startTime duration) 
     easedValue = quadIn normalisedProgress
     valueDifference = to - from
     delta = valueDifference * easedValue
-
-{-
-  x
-  from 
-  to
-  fromTime
-  duration
-  function
--}

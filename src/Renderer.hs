@@ -13,6 +13,7 @@ import Renderable as R
 import Animation 
 import Ease 
 import Time 
+import Transformation 
 
 setClearColor :: GL.Color4 Float -> IO ()
 setClearColor color = do
@@ -46,7 +47,6 @@ render frameNumber millisElpased state = do
   let anims = (animations . renderable $ meshObj)
   let transformations = map (processAnimation frameNumber millisElpased) anims
   let tran = mconcat transformations
-  _ <- putStrLn (show tran)
   let translatedMatrix = R.modelMatrix tran (M.modelMatrix state)
   P.setMVPMatrix translatedMatrix
   P.useProgram (program state)
