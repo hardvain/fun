@@ -58,7 +58,7 @@ module Ease
   , sineOut
   , sineInOut
   , EasingState(..)
-  , getValue
+  , animate
   , applyEasing
   , EasingFunction
   , FrameNumber
@@ -78,7 +78,6 @@ data EasingFunction = BounceOut | BounceIn | BounceInOut
 type FrameNumber = Int
 type MillisElapsed = Int
 
-type Animation a = (FrameNumber, MillisElapsed) -> a
 
 data EasingState = EasingState {
   easingFunction :: EasingFunction,
@@ -95,8 +94,8 @@ data EasingState = EasingState {
       pass the result to easing function and get the result 
       get the difference between from and to, multiply it by above result and add to from. The resulting value is the final value
 -}
-getValue :: FrameNumber -> MillisElapsed -> EasingState -> Float
-getValue frameNumber millisElapsed state@(EasingState _ (Just (startTime, duration)) _ from _ ) = 
+animate :: (FrameNumber, MillisElapsed) -> EasingState -> Float
+animate (frameNumber,millisElapsed) state@(EasingState _ (Just (startTime, duration)) _ from _ ) = 
   if shouldParticipate
     then applyEasing frameNumber millisElapsed state
     else from

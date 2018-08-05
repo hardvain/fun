@@ -27,7 +27,7 @@ data RenderHint = RenderHint {
   numVertices :: Int
 }
 
-initializePipelineState :: Renderable -> IO RenderPipelineState
+initializePipelineState ::  Renderable -> IO RenderPipelineState
 initializePipelineState renderable@(Renderable (Drawable positions colorsData _) _ _ ) =
   withNewVertexArrayObject $ \vao -> do
     prog <- P.defaultProgram
