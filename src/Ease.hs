@@ -57,9 +57,8 @@ module Ease
   , sineIn
   , sineOut
   , sineInOut
+  , getEasing
   , EasingState(..)
-  , animate
-  , applyEasing
   , EasingFunction(..)
   , FrameNumber
   , MillisElapsed
@@ -73,7 +72,40 @@ import           Data.Default
 -- This is not statically checked, but maybe should be.
 type Ease a = Fractional a => a -> a
 
-data EasingFunction = BounceOut | BounceIn | BounceInOut
+data EasingFunction =  BounceOut | BounceIn | BounceInOut 
+                      -- | BackIn | BackOut | BackInOut | CircIn | CircOut | CircInOut
+                      | CubicIn | CubicOut | CubicInOut | ExpoIn | ExpoOut | ExpoInOut | Linear | QuadIn | QuadOut | QuadInOut
+                      | QuartIn | QuartOut | QuartInOut | QuintIn | QuintOut | QuintInOut | SineIn | SineOut | SineInOut 
+
+getEasing :: (Ord a, Floating a) => EasingFunction -> Ease a
+getEasing BounceOut = bounceOut
+getEasing BounceIn = bounceIn
+getEasing BounceInOut = bounceInOut
+-- getEasing BackIn = backIn (Overshoot 1)
+-- getEasing BackOut = backOut (Overshoot 1)
+-- getEasing BackInOut = backInOut (Overshoot 1)
+-- getEasing CircIn = circIn 1.0
+-- getEasing CircOut = circOut
+-- getEasing CircInOut = circInOut
+getEasing CubicIn = cubicIn
+getEasing CubicOut = cubicOut
+getEasing CubicInOut = cubicInOut
+getEasing ExpoIn = expoIn
+getEasing ExpoOut = expoOut
+getEasing ExpoInOut = expoInOut
+getEasing Linear = linear
+getEasing QuadIn = quadIn
+getEasing QuadOut = quadOut
+getEasing QuadInOut = quadInOut
+getEasing QuartIn = quartIn
+getEasing QuartOut = quartOut
+getEasing QuartInOut = quartInOut
+getEasing QuintIn = quintIn
+getEasing QuintOut = quintOut
+getEasing QuintInOut = quintInOut
+getEasing SineIn = sineIn
+getEasing SineOut = sineOut
+getEasing SineInOut = sineInOut
 
 type FrameNumber = Int
 type MillisElapsed = Int
@@ -86,31 +118,6 @@ data EasingState = EasingState {
   from :: Float,
   to :: Float
 }
-{-
-  Check if current current framenumber is inbetween active frame & active frame + duration / or do the same for time
-    if yes,
-      Get the elapsed value by subtracting the current value - start value
-      Convert elapsed value to a range from 0 to 1
-      pass the result to easing function and get the result 
-      get the difference between from and to, multiply it by above result and add to from. The resulting value is the final value
--}
-animate :: (FrameNumber, MillisElapsed) -> EasingState -> Float
-animate (frameNumber,millisElapsed) state@(EasingState _ (Just (startTime, duration)) _ from _ ) = 
-  if shouldParticipate
-    then applyEasing frameNumber millisElapsed state
-    else from
-  where 
-    shouldParticipate = millisElapsed > startTime && millisElapsed < (startTime + duration)
-    
-
-applyEasing :: FrameNumber -> MillisElapsed -> EasingState -> Float
-applyEasing fromeNumber millisElapsed state@(EasingState easingFunction (Just (startTime, duration)) _ from to ) = from + delta
-  where 
-    elapsedValue = millisElapsed - startTime
-    normalisedProgress = (fromIntegral elapsedValue) / (fromIntegral duration)
-    easedValue = bounceInOut normalisedProgress
-    valueDifference = to - from
-    delta = valueDifference * easedValue
 
 newtype Overshoot a = Overshoot a
 instance Fractional a => Default (Overshoot a) where def = Overshoot 1.70158

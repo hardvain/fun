@@ -22,9 +22,6 @@ setClearColor color = do
   GL.clear [GL.ColorBuffer]
   return ()
 
-setMVPMatrix :: Mesh -> IO ()
-setMVPMatrix = P.setMVPMatrix . meshModelMatrix
-  
 draw :: SceneGraph Renderable -> Window ->  Int -> Int -> IO ()
 draw sceneGraph  = drawLoop (fmap (unsafePerformIO . initializePipelineState) sceneGraph)
 
