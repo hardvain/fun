@@ -20,3 +20,22 @@ projection degrees aspectRatio nearZ farZ = fromList 4 4 matrix
 
 projectionMatrix :: Matrix Float
 projectionMatrix = projection 45 1 0.01 100
+
+translate :: Float -> Float -> Float -> Matrix Float
+translate x y z = fromList 4 4 matrix
+  where 
+    matrix = [1, 0, 0, x,
+              0, 1, 0, y,
+              0, 0, 1, z,
+              0, 0, 0, 1]
+
+scale :: Float -> Float -> Float -> Matrix Float
+scale x y z = fromList 4 4 matrix
+  where 
+    matrix = [x, 0, 0, 0,
+              0, y, 0, 0,
+              0, 0, z, 0,
+              0, 0, 0, 1]
+
+
+              
