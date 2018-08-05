@@ -47,3 +47,4 @@ meshAnimations = animations . renderable
 
 meshModelMatrix :: Mesh -> Matrix Float
 meshModelMatrix = mvpMatrix . renderable
+

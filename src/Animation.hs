@@ -13,7 +13,6 @@ data Animation = Animation {
   startTime :: Int,
   duration :: Int
 }
-
 runAnimation :: Animation -> FrameNumber -> MillisElapsed -> Float
 runAnimation animation@(Animation _ from _ _ startTime duration) frameNumber millisElapsed = if shouldParticipate
   then calculateValue animation frameNumber millisElapsed 
@@ -47,3 +46,6 @@ getTransformationForTarget ScaleZ = (\v -> Transformation defaultPosition defaul
 getTransformationForTarget RotationX = (\v -> Transformation defaultPosition (Rotation v 0 0) defaultScale)
 getTransformationForTarget RotationY = (\v -> Transformation defaultPosition (Rotation 0 v 0) defaultScale)
 getTransformationForTarget RotationZ = (\v -> Transformation defaultPosition (Rotation 0 0 v) defaultScale)
+
+transformAnimations :: Int -> Int -> [Animation] -> Transformation
+transformAnimations frameNumber millisElapsed anims = mconcat $ fmap (getTransformation frameNumber millisElapsed) anims

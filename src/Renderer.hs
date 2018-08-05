@@ -35,10 +35,10 @@ drawLoop :: SceneGraph RenderPipelineState -- A scenegraph with completeley fill
             -> Int  -- Current FrameNumber
             -> Int  -- StartTime of the application
             -> IO ()
-drawLoop sceneGraph@(SceneGraph tree) window frameNumber startTime = do
+drawLoop sceneGraph@(SceneGraph stateTree) window frameNumber startTime = do
   setClearColor $ GL.Color4 0 0 0 1
   millisElpased <- elapsedTimeFrom startTime
-  apply (render frameNumber millisElpased) tree 
+  apply (render frameNumber millisElpased) stateTree 
   GLFW.swapBuffers window
   forever $ do
     GLFW.pollEvents
@@ -48,12 +48,10 @@ renderHint :: Mesh -> RenderHint
 renderHint mesh = RenderHint GL.Triangles 0 (numVerticesToDraw mesh)
     
 render :: FrameNumber -> MillisElapsed -> RenderPipelineState -> IO ()
-render frameNumber millisElpased state = do
+render frameNumber millisElapsed state = do
   let meshObj = mesh state
-  let anims = (meshAnimations meshObj)
-  let transformations = fmap (getTransformation frameNumber millisElpased) anims
-  let tran = mconcat transformations
-  let translatedMatrix = T.modelMatrix tran (M.modelMatrix state)
+  let transformation = transformAnimations frameNumber millisElapsed $ meshAnimations meshObj
+  let translatedMatrix = T.modelMatrix transformation (M.modelMatrix state)
   P.setMVPMatrix translatedMatrix
   P.useProgram (program state)
   withVertexArrayObject (vao meshObj) $ do
