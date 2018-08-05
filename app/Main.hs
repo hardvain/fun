@@ -22,14 +22,13 @@ main :: IO ()
 main = do
   window <- createWindow 1920 1280 "Fun"
   startTime <- timeInMillis
-  let square = toDrawable red500 (Square (-0.5, -0.5,0) 1.0)
+  let squarePoints = Square (0,0,0) 0.5
+  let square = toDrawable red500 squarePoints
   let circle = toDrawable blue500 (Circle (0.5, 0.5,0) 0.5 100)
   let polyLine =  toDrawable White (Polyline [ (0.0,-0.66,0) ,(0.33,-0.33,0) ,(0.66,-0.66,0) ,(1.0,-0.33,0)] 0.01)
   let squareRenderable = makeDefaultRenderable square 
   let circleRenderable = makeDefaultRenderable circle 
-  let renderables = [ makeNode circleRenderable
-                    , makeNode $ makeDefaultRenderable polyLine
-                    ]
+  let renderables = [ ]
   let sceneGraph = SceneGraph (Node squareRenderable renderables)
   let startingFrameNumber = 0
   draw sceneGraph window startingFrameNumber startTime

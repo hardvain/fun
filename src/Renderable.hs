@@ -11,9 +11,10 @@ data Drawable = Drawable {
   colors :: [GL.Color4 Float],
   numberOfVertices :: Int
 }
+instance Show Drawable where
+  show (Drawable vertices colors num) = "Vertices: " ++ (show vertices) ++ "\n" ++ "Colors: " ++ (show colors) ++ "\n" ++ "Number of Vertices: " ++ (show num)
 
-
-data Position = Position Float Float Float
+data Position = Position Float Float Float deriving Show
 instance Semigroup Position where
   (Position x1 y1 z1) <> (Position x2 y2 z2) = Position (x1+x2) (y1+y2) (z1+z2)
 
@@ -32,10 +33,10 @@ instance Semigroup Scale where
 instance Monoid Scale where
   mempty = defaultScale  
 
-data Rotation = Rotation Float Float Float
-data Scale = Scale Float Float Float
+data Rotation = Rotation Float Float Float deriving Show 
+data Scale = Scale Float Float Float deriving Show
 
-data Transformation = Transformation Position Rotation Scale
+data Transformation = Transformation Position Rotation Scale deriving Show
 
 instance Semigroup Transformation where
   (Transformation p1 r1 s1) <> (Transformation p2 r2 s2) = Transformation (mappend p1 p2) (mappend r1 r2) (mappend s1 s2) 
@@ -64,14 +65,14 @@ defaultTransformation :: Transformation
 defaultTransformation = Transformation defaultPosition defaultRotation defaultScale
 
 makeDefaultRenderable :: Drawable -> Renderable
-makeDefaultRenderable drawable = Renderable drawable defaultTransformation (M.translate 0.2 (-0.4) 0) [sampleAnimation PositionX]
+makeDefaultRenderable drawable = Renderable drawable defaultTransformation M.defaultMatrix [sampleAnimation PositionX]
 
 sampleAnimation :: AnimationTarget -> Animation 
-sampleAnimation target = Animation target (-1) (1)  BounceInOut 0 5000
+sampleAnimation target = Animation target (0) (1)  BounceInOut 0 5000
 
 modelMatrix :: Transformation -> Matrix Float -> Matrix Float
 modelMatrix (Transformation (Position x y z) (Rotation a b c) (Scale l m n))currentMatrix = result
   where
     translateMatrix = M.translate x y z
     scaleMatrix = M.scale l m n
-    result = multStd (multStd currentMatrix translateMatrix) scaleMatrix
+    result = multStd (multStd translateMatrix currentMatrix) scaleMatrix
