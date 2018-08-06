@@ -57,4 +57,3 @@ render frameNumber millisElapsed state = do
   withVertexArrayObject (vao meshObj) $ do
     let (RenderHint mode startIndex numVertices) = renderHint meshObj
     GL.drawArrays mode (fromIntegral startIndex) (fromIntegral numVertices)
-

@@ -85,13 +85,4 @@ line (x1,y1,_) (x2,y2,_) w = map (addVectors (x1,y1,0)) $ rotate3D' theta $ rect
             theta = signum y * acos x                               -- | angle in radians
             len   = sqrt((x2-x1)^2+ (y2-y1)^2)
 
-getColor :: Color -> Color4 Float
-getColor (RGB r g b)    = Color4 r g b 1.0
-getColor (RGBA r g b a) = Color4 r g b a
-getColor x 
-    | x == Red   = Color4 1 0 0 1 
-    | x == Green = Color4 0 1 0 1
-    | x == Blue  = Color4 0 0 1 1
-    | x == White = Color4 1 1 1 1
-    | otherwise  = Color4 0 0 0 1
       

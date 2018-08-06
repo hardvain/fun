@@ -10,9 +10,9 @@ data Drawable = Drawable {
   numberOfVertices :: Int
 }
 
-toDrawable :: Color -> Geometry -> Drawable
-toDrawable clr x = Drawable vertices colors (length vertices)
+toDrawable :: Geometry -> Color -> Drawable
+toDrawable g clr = Drawable vertices colors (length vertices)
     where
-      vertices  = map vertex $ geometry x
+      vertices  = map vertex $ geometry g
       color     = getColor clr
       colors    = map (const color) $ vertices

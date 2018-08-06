@@ -29,7 +29,6 @@ calculateValue animation@(Animation target from to function startTime duration) 
     valueDifference = to - from
     delta = valueDifference * easedValue
 
-
 sampleAnimation :: AnimationTarget -> Animation 
 sampleAnimation target = Animation target (0) (6.28)  BounceInOut 0 5000
   

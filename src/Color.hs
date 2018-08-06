@@ -3,6 +3,7 @@ module Color where
 import Data.Bits
 import System.IO.Unsafe
 import System.Random (randomRIO)
+import qualified Graphics.Rendering.OpenGL as GL hiding (Matrix, Position)
 
 data Color = Red
               | Green
@@ -23,6 +24,17 @@ instance Eq Color where
   RGBA _ _ _ _ == RGBA _ _ _ _ = True
   Default      == Default      = True
   _ == _ = False
+
+
+getColor :: Color -> GL.Color4 Float
+getColor (RGB r g b)    = GL.Color4 r g b 1.0
+getColor (RGBA r g b a) = GL.Color4 r g b a
+getColor x 
+    | x == Red   = GL.Color4 1 0 0 1 
+    | x == Green = GL.Color4 0 1 0 1
+    | x == Blue  = GL.Color4 0 0 1 1
+    | x == White = GL.Color4 1 1 1 1
+    | otherwise  = GL.Color4 0 0 0 1
 
 hex :: Integer -> Color
 hex v = RGB r g b
