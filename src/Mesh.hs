@@ -12,8 +12,6 @@ import Drawable
 import Animation
 
 data Mesh = Mesh {
-  positionBufferObject :: GL.BufferObject,
-  colorBufferObject :: GL.BufferObject,
   vao :: GL.VertexArrayObject,
   renderable :: Renderable
 }
@@ -36,7 +34,7 @@ initializePipelineState renderable@(Renderable (Drawable positions colorsData _)
     prog <- P.defaultProgram
     positionBufferObject <- createAndDescribeBuffer positions 0 4
     colorBufferObject <- createAndDescribeBuffer colorsData 1 4
-    let mesh = Mesh positionBufferObject colorBufferObject vao renderable
+    let mesh = Mesh vao renderable
     return $ RenderPipelineState mesh prog (mvpMatrix renderable)
 
 numVerticesToDraw :: Mesh -> Int

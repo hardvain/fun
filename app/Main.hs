@@ -27,14 +27,14 @@ main = do
   let circle = Circle (0.5, 0.5,0) 0.5 100
   let line = Polyline [ (0.0,-0.66,0) ,(0.33,-0.33,0) ,(0.66,-0.66,0) ,(1.0,-0.33,0)] 0.01
   color <- randomMaterialColor
-  let squareDrawable = toDrawable square color
-  let circleDrawable = toDrawable circle deepOrange400
-  let lineDrawable = toDrawable line White 
+  let squareDrawable = makeDrawable square color
+  let circleDrawable = makeDrawable circle deepOrange400
+  let lineDrawable = makeDrawable line White 
   let squareRenderable = makeDefaultRenderable squareDrawable 
   let circleRenderable = makeDefaultRenderable circleDrawable 
   let lineRenderable = makeDefaultRenderable lineDrawable 
-  let renderables = [ ]
-  let sceneGraph = SceneGraph (Node lineRenderable renderables)
+  let renderables = []
+  let sceneGraph = SceneGraph (Node squareRenderable renderables)
   let startingFrameNumber = 0
   draw sceneGraph window startingFrameNumber startTime
   closeWindow window
