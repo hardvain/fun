@@ -36,7 +36,7 @@ drawLoop :: SceneGraph RenderPipelineState -- A scenegraph with completeley fill
             -> Int  -- StartTime of the application
             -> IO ()
 drawLoop sceneGraph@(SceneGraph stateTree) window frameNumber startTime = do
-  setClearColor $ GL.Color4 0 0 0 1
+  setClearColor $ GL.Color4 1 1 1 1
   millisElpased <- elapsedTimeFrom startTime
   apply (render frameNumber millisElpased) stateTree 
   GLFW.swapBuffers window
